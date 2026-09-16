@@ -1,59 +1,57 @@
-# WorkflowPlatformAdminFrontEnd
+# Workflow admin frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.13.
+Minimal Angular list/create screen backed by the [Workflow .NET API](https://github.com/thelonelymars225/workflow-platform). This is a local development slice, not a production deployment.
 
-## Development server
+## Run locally
 
-To start a local development server, run:
+Use Node 24 LTS and npm 11 (checked with Node 24.19.0 / npm 11.9.0). Dependencies are locked; Angular/CLI are 21.2.x. The backend requires .NET 10 and a running PostgreSQL 16+ development database. Follow its README to configure `ConnectionStrings:WorkflowDatabase`, run the initial EF migration, and optionally enable the development seed.
 
-```bash
-ng serve
+Start the API in the backend repository:
+
+```sh
+dotnet run --project services/Workflow.Api --launch-profile http
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Then from this frontend repository:
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```sh
+npm ci
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Open `http://localhost:4200`. API liveness is `http://localhost:5159/health`; Development OpenAPI is `http://localhost:5159/openapi/v1.json`. The UI's API-connected label reports liveness, not database readiness; list errors separately show database/API failures.
 
-```bash
-ng generate --help
+## API wiring and SSR
+
+`src/app/workflow-api.ts` is the typed HttpClient boundary for health/list/get/create and uses same-origin `/api`. **The only development backend address is in `proxy.conf.json`** (default `http://localhost:5159`); restart `npm start` after changing it. Angular's dev server forwards `/api/**`, so no permissive CORS is needed. Do not put database credentials in Angular code or proxy configuration.
+
+`app.config.ts` provides HttpClient with fetch. `afterNextRender` in `app.ts` starts requests only in the hydrated browser; SSR/prerender renders a stable loading shell without attempting a relative-URL server fetch. `npm run build` checks browser and server bundles. The standalone generated SSR server does **not** use the development proxy: a production host would need same-origin `/api` routing. Production routing/deployment is outside this setup.
+
+## Checks and smoke test
+
+```sh
+npm test -- --watch=false
+npm run build
 ```
 
-## Building
+Unit tests use Angular's HTTP test backend, not a real API/database. They cover loading/empty state, whitespace validation, pending duplicate prevention, list reload after create, and failure/input retention.
 
-To build the project run:
+For the real integration smoke test, use PostgreSQL plus the API, then:
 
-```bash
-ng build
-```
+1. Check loading followed by an empty list on a fresh database with seed off.
+2. Create a workflow with an optional description; confirm it appears with a saved ID.
+3. Refresh the page, restart the API, and refresh again: the same saved ID must remain.
+4. Submit only spaces; expect validation without a request. API-side direct invalid POST must also return 400.
+5. Stop the API and retry list/create; expect visible errors and retained inputs. Repeat with PostgreSQL unavailable; API liveness may still succeed while the list fails.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Successful browser creation, reload/API-restart persistence, and real PostgreSQL migration/seed checks were not verified in the restricted setup environment because no usable PostgreSQL instance was available. Do not treat passing mocked unit tests as those integration checks.
 
-## Running unit tests
+## Code map and troubleshooting
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- `src/app/workflow-api.ts`: DTOs and all API calls.
+- `src/app/app.ts`, `app.html`, `app.css`: loading, empty, error and success states; list/create UI; pending submission lock.
+- `src/app/app.config.ts`: application providers and hydration.
+- `src/app/app.spec.ts`: HTTP-isolated component tests.
+- `proxy.conf.json` and `angular.json`: local API proxy and dev-server configuration.
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Connection errors: verify `/health` directly, API port 5159, and proxy target, then restart the dev server. An API-connected badge plus failed list usually means database configuration, PostgreSQL, or migrations need attention; see the backend README. Use the HTTP launch profile to avoid development certificate issues. If port 4200 is occupied, stop the earlier server or use `npm start -- --port 4201`. There is no e2e runner installed; use the explicit real-browser checklist above.
