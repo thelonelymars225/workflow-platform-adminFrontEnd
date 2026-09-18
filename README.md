@@ -1,57 +1,73 @@
-# Workflow admin frontend
+# workFlow frontend — Atlas v2
 
-Minimal Angular list/create screen backed by the [Workflow .NET API](https://github.com/thelonelymars225/workflow-platform). This is a local development slice, not a production deployment.
+Angular 21 implementation of [Atlas v2 in Figma](https://www.figma.com/design/c7j7GsdR0CgqhNJjM9YyYl?node-id=43-453). The familiar sidebar, three use cases, guided setup/review flow, connected apps, people, and settings follow the refined Atlas design, with responsive layouts and native form controls.
 
-## Run locally
+## Run
 
-Use Node 24 LTS and npm 11 (checked with Node 24.19.0 / npm 11.9.0). Dependencies are locked; Angular/CLI are 21.2.x. The backend requires .NET 10 and a running PostgreSQL 16+ development database. Follow its README to configure `ConnectionStrings:WorkflowDatabase`, run the initial EF migration, and optionally enable the development seed.
-
-Start the API in the backend repository:
-
-```sh
-dotnet run --project services/Workflow.Api --launch-profile http
-```
-
-Then from this frontend repository:
+Use Node 24 LTS and npm 11. Dependencies are unchanged and locked.
 
 ```sh
 npm ci
 npm start
 ```
 
-Open `http://localhost:4200`. API liveness is `http://localhost:5159/health`; Development OpenAPI is `http://localhost:5159/openapi/v1.json`. The UI's API-connected label reports liveness, not database readiness; list errors separately show database/API failures.
+Open `http://localhost:4200`. The default `/start` route opens the clearly labeled **Atlas preview**. It works without a backend. `/sign-in` presents the sign-in design, with a direct link to explore the sample workspace.
 
-## API wiring and SSR
+## What is connected
 
-`src/app/workflow-api.ts` is the typed HttpClient boundary for health/list/get/create and uses same-origin `/api`. **The only development backend address is in `proxy.conf.json`** (default `http://localhost:5159`); restart `npm start` after changing it. Angular's dev server forwards `/api/**`, so no permissive CORS is needed. Do not put database credentials in Angular code or proxy configuration.
+| Area               | Behavior                                                                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/workflows`       | Existing real workflow API: health, list, and create. Input retention, request errors, pending-submit protection, and HTTP tests are preserved.               |
+| `/start`, `/tasks` | Interactive sample workspace. Create tasks, edit setup, filter tasks, save drafts, review, and try completion.                                                |
+| `/connections`     | Sample access details and a local connection preview. No OAuth or provider requests.                                                                          |
+| `/people`          | Sample members, role explanations, and invitation previews. No invitations are sent.                                                                          |
+| `/settings`        | Workspace name, profile, timezone, and reminder preferences saved in this browser for the preview.                                                            |
+| `/sign-in`         | Sign-in UI and explanatory dialog. No authentication, account creation, session, or route protection is simulated. The email is neither submitted nor stored. |
 
-`app.config.ts` provides HttpClient with fetch. `afterNextRender` in `app.ts` starts requests only in the hydrated browser; SSR/prerender renders a stable loading shell without attempting a relative-URL server fetch. `npm run build` checks browser and server bundles. The standalone generated SSR server does **not** use the development proxy: a production host would need same-origin `/api` routing. Production routing/deployment is outside this setup.
+The backend currently exposes workflow definition CRUD, not SSO, app connections, document processing, scheduling, delivery, workspace administration, or approval execution. These Atlas areas are explicitly marked as previews. Sample report/update content is fixed; choosing a file name does not read or analyze a real file. The completion view states that nothing was sent. This PR does not add backend endpoints or security enforcement.
 
-## Checks and smoke test
+Preview changes are stored under `workflow.atlas-preview.v1` in localStorage after hydration. Malformed/version-mismatched data falls back to the samples. Storage failures show a notice and retain changes for the current visit. Use sample information only; preview storage is not a credentials store. Clear that localStorage key to reset the sample workspace. `/workflows` uses the existing server API and does not mix its records with preview tasks.
+
+## API and SSR
+
+Start PostgreSQL and the [.NET backend](https://github.com/thelonelymars225/workflow-platform), following that repository's README, then run:
+
+```sh
+dotnet run --project services/Workflow.Api --launch-profile http
+```
+
+`src/app/workflow-api.ts` remains the typed HttpClient boundary using same-origin `/api`. The single development API address is in `proxy.conf.json` (default `http://localhost:5159`). Restart `npm start` after changing it. No credentials belong in frontend code or the proxy configuration.
+
+Requests and localStorage restoration run only after hydration. The production build prerenders eight static routes; task IDs use server rendering and hydrate to browser-local drafts. Production hosting needs the Angular SSR server for dynamic/deep links and same-origin `/api` routing; the standalone SSR server does not use the development proxy. API liveness does not imply PostgreSQL readiness.
+
+## Code map
+
+- `src/app/layout/`: responsive sidebar, mobile menu, skip link, help, and router outlet.
+- `src/app/features/`: home, tasks (setup/review/completion/list), connections, people, settings, sign-in, and the preserved API workflow screen.
+- `src/app/preview/`: typed sample data and isolated browser persistence. This is never an authentication or authorization boundary.
+- `src/app/shared/`: page heading, native modal dialog, and not-found view.
+- `src/styles.css`: Atlas colors, typography, controls, cards, rows, responsive grids, focus states, and reduced-motion handling.
+- `public/atlas/`: exact exported Figma icons and a self-hosted DM Sans font with its license.
+
+Native dialog elements provide focus containment, Escape dismissal, and focus restoration. Navigation uses real URLs and active states; filters expose pressed state; forms have labels and validation messages. Mobile uses a labeled expandable menu and stacked forms/cards. No new runtime dependencies were added.
+
+## Checks
 
 ```sh
 npm test -- --watch=false
 npm run build
 ```
 
-Unit tests use Angular's HTTP test backend, not a real API/database. They cover loading/empty state, whitespace validation, pending duplicate prevention, list reload after create, and failure/input retention.
+Tests cover the existing HTTP contract, request failures/input retention, routed task setup and review, edited-value retention, the completion gate, missing tasks, local persistence restoration, corrupt state, storage failures, and duplicate invitation previews.
 
-For the real integration smoke test, use PostgreSQL plus the API, then:
+For browser review, check desktop at 1440×960 and mobile at 390×844:
 
-1. Check loading followed by an empty list on a fresh database with seed off.
-2. Create a workflow with an optional description; confirm it appears with a saved ID.
-3. Refresh the page, restart the API, and refresh again: the same saved ID must remain.
-4. Submit only spaces; expect validation without a request. API-side direct invalid POST must also return 400.
-5. Stop the API and retry list/create; expect visible errors and retained inputs. Repeat with PostgreSQL unavailable; API liveness may still succeed while the list fails.
+1. Start each use case, change its fields, open the preview, and use **Make changes**. Confirm the edited values remain.
+2. Save a draft, refresh, and open it from **My tasks → Saved drafts**.
+3. Try report completion, weekly-update confirmation, and approval-request confirmation. Confirm preview labels remain clear and no delivery is implied.
+4. Use Connected apps access dialogs; preview a connection. Try an invalid and then valid invitation, and confirm member counts update without sending email.
+5. Save workspace/profile preferences and refresh. Open each settings section and the sign-in explanation.
+6. Use Tab, Shift+Tab, Enter, and Escape to check the menu, links, form controls, modal focus, and focus return. Check narrow layout and 200% zoom for overflow.
+7. With the API/database running, use `/workflows` to create a definition, refresh, and restart the API to check persistence. Stop the API to check errors and retained input.
 
-Successful browser creation, reload/API-restart persistence, and real PostgreSQL migration/seed checks were not verified in the restricted setup environment because no usable PostgreSQL instance was available. Do not treat passing mocked unit tests as those integration checks.
-
-## Code map and troubleshooting
-
-- `src/app/workflow-api.ts`: DTOs and all API calls.
-- `src/app/app.ts`, `app.html`, `app.css`: loading, empty, error and success states; list/create UI; pending submission lock.
-- `src/app/app.config.ts`: application providers and hydration.
-- `src/app/app.spec.ts`: HTTP-isolated component tests.
-- `proxy.conf.json` and `angular.json`: local API proxy and dev-server configuration.
-
-Connection errors: verify `/health` directly, API port 5159, and proxy target, then restart the dev server. An API-connected badge plus failed list usually means database configuration, PostgreSQL, or migrations need attention; see the backend README. Use the HTTP launch profile to avoid development certificate issues. If port 4200 is occupied, stop the earlier server or use `npm start -- --port 4201`. There is no e2e runner installed; use the explicit real-browser checklist above.
+Automated unit tests and production build have passed. The cloud browser could not reach localhost in the implementation environment, so visual/browser checks and live PostgreSQL persistence remain manual verification items. Do not treat the mocked HTTP tests as a live backend integration test.

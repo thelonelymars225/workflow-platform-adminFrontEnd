@@ -1,0 +1,62 @@
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="mobile-header">
+  <a class="brand" routerLink="/start">workFlow</a
+  ><button
+    class="button secondary"
+    (click)="menuOpen.set(!menuOpen())"
+    [attr.aria-expanded]="menuOpen()"
+    aria-controls="workspace-nav"
+  >
+    {{ menuOpen() ? 'Close menu' : 'Menu' }}
+  </button>
+</header>
+<aside class="sidebar" [class.open]="menuOpen()">
+  <a class="brand desktop-brand" routerLink="/start">workFlow</a>
+  <p class="workspace-name">{{ store.preferences().workspace }}</p>
+  <nav id="workspace-nav" aria-label="Workspace">
+    @for (item of nav; track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+        (click)="menuOpen.set(false)"
+        >{{ item.label }}</a
+      >
+    }
+  </nav>
+  <button class="text-button help-button" (click)="help.open()">
+    Help & guidance <span aria-hidden="true">→</span>
+  </button>
+  <div class="preview-label">
+    @if (router.url.startsWith('/workflows')) {
+      <span class="eyebrow">Connected workflows</span>
+      <p>Workflow definitions are saved to your workspace.</p>
+      <a routerLink="/start">Explore Atlas preview →</a>
+    } @else {
+      <span class="eyebrow">Atlas preview</span>
+      <p>Sample workspace. Nothing is sent.</p>
+      <a routerLink="/workflows">Open saved workflows →</a
+      ><a routerLink="/sign-in">View sign-in →</a>
+    }
+  </div>
+</aside>
+<main #main id="main" tabindex="-1" class="main-content">
+  @if (store.storageNotice()) {
+    <p class="notice storage-notice" role="status">{{ store.storageNotice() }}</p>
+  }
+  <router-outlet (activate)="activated()" />
+</main>
+<app-modal #help title="Start with one small task.">
+  <p class="eyebrow accent">Help & guidance</p>
+  <p>1. Choose a report, an update, or an approval request.</p>
+  <p>2. We’ll help you choose the files and timing.</p>
+  <p>3. Check the preview before anything is shared.</p>
+  <p class="muted">
+    Need help with access? Your team’s administrator can help you connect an app or invite someone.
+  </p>
+  <p class="hint">
+    You’re exploring a sample workspace. Changes stay in this browser; no files, invitations, or
+    messages are sent.
+  </p>
+  <button class="button" (click)="help.close()">Back to what I was doing</button>
+</app-modal>

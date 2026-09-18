@@ -1,0 +1,85 @@
+.sign-in {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100dvh;
+}
+.story {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  background: var(--atlas-ink);
+  color: white;
+  padding: 40px;
+}
+.brand {
+  font-size: 28px;
+  font-weight: 700;
+}
+.story h1 {
+  font-size: 44px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+.story h1 span {
+  display: block;
+}
+.intro {
+  font-size: 18px;
+}
+.story .panel {
+  color: var(--atlas-ink);
+  max-width: 610px;
+}
+.form-side {
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sign-in-form {
+  width: 100%;
+  max-width: 480px;
+}
+.sign-in-form h2 {
+  font-size: 34px;
+  font-weight: 500;
+}
+.preview-note {
+  border-top: 1px solid var(--atlas-border);
+  padding-top: 16px;
+}
+@media (max-width: 900px) {
+  .story {
+    padding: 32px;
+  }
+  .story h1 {
+    font-size: 38px;
+  }
+  .form-side {
+    padding: 32px;
+  }
+}
+@media (max-width: 700px) {
+  .sign-in {
+    grid-template-columns: 1fr;
+  }
+  .story {
+    gap: 20px;
+    padding: 28px 24px;
+  }
+  .story h1 {
+    font-size: 32px;
+    line-height: 1.2;
+  }
+  .story h1 span {
+    display: inline;
+  }
+  .story .panel,
+  .story > .intro,
+  .story > p:last-child {
+    display: none;
+  }
+  .form-side {
+    padding: 32px 24px;
+  }
+}

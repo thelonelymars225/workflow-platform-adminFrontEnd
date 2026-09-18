@@ -1,0 +1,199 @@
+@if (form; as task) {
+  <form #setup="ngForm" class="stack" (ngSubmit)="save(true, setup)" novalidate>
+    <app-page-heading
+      [breadcrumb]="copy[task.kind].title + ' / Set up'"
+      [title]="copy[task.kind].heading"
+      [description]="copy[task.kind].guidance"
+    />
+    <div class="steps">
+      <section class="panel stack-small step" aria-labelledby="source-heading">
+        <h3 id="source-heading">1&nbsp; {{ copy[task.kind].steps[0] }}</h3>
+        <div class="field">
+          <label for="source">App to use</label
+          ><select id="source" name="source" [(ngModel)]="task.source">
+            <option>Google Drive</option>
+            <option>Google Sheets</option>
+            <option>Notion</option>
+            <option>Microsoft 365</option></select
+          ><small class="hint">{{
+            task.kind === 'update'
+              ? 'Project board · Read selected pages'
+              : 'Sample connection to ' + store.preferences().workspace
+          }}</small>
+        </div>
+        <div class="field">
+          <label for="document">{{
+            task.kind === 'update'
+              ? 'Project to summarize'
+              : task.kind === 'approval'
+                ? 'Document'
+                : 'File to use'
+          }}</label
+          ><input
+            id="document"
+            name="document"
+            [(ngModel)]="task.document"
+            required
+            pattern=".*\S.*"
+            maxlength="200"
+            #document="ngModel"
+            [attr.aria-invalid]="document.invalid && document.touched"
+            aria-describedby="document-hint"
+          /><small id="document-hint" class="hint">{{
+            task.kind === 'update'
+              ? 'Status, milestones, and open questions'
+              : 'Choose a sample file name to try this flow'
+          }}</small>
+        </div>
+      </section>
+      <section class="panel stack-small step" aria-labelledby="outcome-heading">
+        <h3 id="outcome-heading">2&nbsp; {{ copy[task.kind].steps[1] }}</h3>
+        <div class="field">
+          <label for="output">{{
+            task.kind === 'approval' ? 'Request a decision' : 'What to create'
+          }}</label
+          ><select id="output" name="output" [(ngModel)]="task.output">
+            @switch (task.kind) {
+              @case ('report') {
+                <option>Report + presentation</option>
+                <option>Report only</option>
+              }
+              @case ('update') {
+                <option>Weekly team summary</option>
+                <option>Project highlights</option>
+              }
+              @case ('approval') {
+                <option>Approve a document</option>
+                <option>Review a proposal</option>
+              }
+            }</select
+          ><small class="hint">{{
+            task.kind === 'report'
+              ? 'A PDF, with an optional PowerPoint file'
+              : task.kind === 'update'
+                ? 'One clear message with links to the original work'
+                : 'Approve or request changes'
+          }}</small>
+        </div>
+        @if (task.kind === 'report') {
+          <div class="field">
+            <label for="period">Report period</label
+            ><input
+              id="period"
+              name="period"
+              [(ngModel)]="task.period"
+              required
+              pattern=".*\S.*"
+              maxlength="80"
+              #period="ngModel"
+              [attr.aria-invalid]="period.invalid && period.touched"
+            /><small class="hint">Summarize results and key changes</small>
+          </div>
+        } @else {
+          <div class="field">
+            <label for="recipient">{{ task.kind === 'approval' ? 'Approver' : 'Share with' }}</label
+            ><select id="recipient" name="recipient" [(ngModel)]="task.recipient">
+              @if (task.kind === 'approval') {
+                <option>Sara Ahmed</option>
+                <option>Omar Khalid</option>
+              } @else {
+                <option>#project-updates</option>
+                <option>#team-updates</option>
+              }</select
+            ><small class="hint">{{
+              task.kind === 'approval' ? 'Workspace reviewer' : 'Slack · Project team'
+            }}</small>
+          </div>
+        }
+      </section>
+      <section class="panel stack-small step" aria-labelledby="timing-heading">
+        <h3 id="timing-heading">3&nbsp; {{ copy[task.kind].steps[2] }}</h3>
+        <div class="field">
+          <label for="schedule">{{
+            task.kind === 'approval' ? 'Send this request' : 'When to prepare it'
+          }}</label
+          ><select id="schedule" name="schedule" [(ngModel)]="task.schedule">
+            @switch (task.kind) {
+              @case ('report') {
+                <option>Monthly · 1st at 09:00</option>
+                <option>Every Monday · 09:00</option>
+                <option>Just this once</option>
+              }
+              @case ('update') {
+                <option>Every Thursday · 16:00</option>
+                <option>Every Monday · 09:00</option>
+                <option>Just this once</option>
+              }
+              @case ('approval') {
+                <option>When I confirm</option>
+              }
+            }</select
+          ><small class="hint">{{
+            task.kind === 'approval'
+              ? 'Review the request before sending'
+              : store.preferences().timezone + ' time'
+          }}</small>
+        </div>
+        @if (task.kind === 'approval') {
+          <div class="field">
+            <label for="due-date">Decision due</label
+            ><input
+              type="date"
+              id="due-date"
+              name="dueDate"
+              [(ngModel)]="task.dueDate"
+              required
+              #dueDate="ngModel"
+              [attr.aria-invalid]="dueDate.invalid && dueDate.touched"
+            /><small class="hint">Send one reminder before the due date</small>
+          </div>
+        } @else {
+          <div class="field">
+            <span class="field-label">Before sharing</span><span>Ask me to review</span
+            ><small class="hint">You check the content and recipients</small>
+          </div>
+        }
+      </section>
+    </div>
+    <div class="task-row">
+      <span class="row-title">{{
+        task.kind === 'report'
+          ? 'Your files are ready.'
+          : task.kind === 'update'
+            ? 'Your project and channel are ready.'
+            : 'Your document and reviewer are ready.'
+      }}</span
+      ><span class="row-detail">{{ task.output }}</span
+      ><span class="row-status">Preview before sharing</span>
+    </div>
+    @if (error()) {
+      <p role="alert" class="error">{{ error() }}</p>
+    }
+    <div class="actions">
+      <button type="submit" class="button" [disabled]="!store.ready()">
+        {{ copy[task.kind].preview }}</button
+      ><button
+        type="button"
+        class="button secondary"
+        [disabled]="!store.ready()"
+        (click)="save(false, setup)"
+      >
+        Save for later</button
+      ><a class="button secondary" routerLink="/connections">Choose another app</a>
+    </div>
+    <p class="muted">Nothing is shared yet. You’ll check the preview on the next page.</p>
+  </form>
+  <app-modal #saved title="Your draft is saved."
+    ><p class="muted">
+      Come back whenever you’re ready. Your choices will be here in this browser.
+    </p>
+    @if (store.storageNotice()) {
+      <p class="notice">{{ store.storageNotice() }}</p>
+    }
+    <a class="button" routerLink="/start" (click)="saved.close()">Back to Start here</a></app-modal
+  >
+} @else if (store.ready()) {
+  <app-not-found />
+} @else {
+  <p role="status">Opening your task…</p>
+}

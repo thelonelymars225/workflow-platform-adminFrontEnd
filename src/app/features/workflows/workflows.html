@@ -1,0 +1,75 @@
+<div class="workflow-page">
+  <header>
+    <p class="eyebrow">Your workspace / Saved workflows</p>
+    <h1>Workflows</h1>
+    <p>
+      Create and view workflows saved to your workspace. This page uses the connected workflow
+      service.
+    </p>
+    <p role="status">{{ health() }}</p>
+  </header>
+  <section aria-labelledby="create-heading">
+    <h2 id="create-heading">Create workflow</h2>
+    <form (ngSubmit)="create()" novalidate>
+      <label for="name">Name <span>(required)</span></label>
+      <input
+        id="name"
+        name="name"
+        [(ngModel)]="name"
+        required
+        maxlength="200"
+        [disabled]="saving()"
+        aria-describedby="name-hint"
+      />
+      <small id="name-hint">1–200 characters, not just spaces.</small>
+      <label for="description">Description <span>(optional)</span></label>
+      <textarea
+        id="description"
+        name="description"
+        [(ngModel)]="description"
+        maxlength="2000"
+        rows="3"
+        [disabled]="saving()"
+      ></textarea>
+      @if (formError()) {
+        <p class="error" role="alert">{{ formError() }}</p>
+      }
+      @if (success()) {
+        <p class="success" role="status">{{ success() }}</p>
+      }
+      <button type="submit" [disabled]="saving()">
+        {{ saving() ? 'Creating…' : 'Create workflow' }}
+      </button>
+    </form>
+  </section>
+  <section aria-labelledby="list-heading" [attr.aria-busy]="loading()">
+    <div class="section-heading">
+      <h2 id="list-heading">Saved workflows</h2>
+      <button type="button" class="secondary" (click)="reload()" [disabled]="loading() || saving()">
+        Refresh list
+      </button>
+    </div>
+    @if (loading()) {
+      <p role="status">Loading workflows…</p>
+    } @else if (loadError()) {
+      <p class="error" role="alert">{{ loadError() }}</p>
+    } @else if (workflows().length === 0) {
+      <p>No workflows yet. Create your first one above.</p>
+    } @else {
+      <ul>
+        @for (workflow of workflows(); track workflow.id) {
+          <li>
+            <h3>{{ workflow.name }}</h3>
+            @if (workflow.description) {
+              <p>{{ workflow.description }}</p>
+            }
+            <small
+              >Created {{ workflow.createdAt | date: 'medium' }} ·
+              <code>{{ workflow.id }}</code></small
+            >
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>

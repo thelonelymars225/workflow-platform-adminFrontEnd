@@ -1,0 +1,35 @@
+<div class="stack">
+  <app-page-heading
+    [breadcrumb]="store.preferences().workspace + ' / Start here'"
+    title="What would you like help with today?"
+    description="Choose a task below. We’ll guide you and show a preview before sharing."
+  />
+  <div class="toolbar">
+    <h2 class="section-title"><strong>Start with something familiar</strong></h2>
+    <a class="button secondary" routerLink="/tasks">See my tasks</a>
+  </div>
+  <section class="card-grid" aria-label="Choose a task">
+    @for (kind of kinds; track kind) {
+      <button class="panel task-card" (click)="start(kind)">
+        <img [src]="'/atlas/' + kind + '.svg'" alt="" width="44" height="44" /><span
+          class="card-copy"
+          ><span class="eyebrow accent">{{ copy[kind].category }}</span
+          ><span class="section-title" style="font-size: 23px">{{ copy[kind].title }}</span
+          ><span class="muted">{{ copy[kind].description }}</span
+          ><span class="cta">{{ copy[kind].action }} <span aria-hidden="true">→</span></span></span
+        >
+      </button>
+    }
+  </section>
+  <h2 class="section-title">Continue when you’re ready</h2>
+  @for (task of store.tasks().slice(0, 2); track task.id) {
+    <a class="task-row" [routerLink]="path(task)"
+      ><span class="row-title">{{ task.name }}</span
+      ><span class="row-detail">{{
+        task.status === 'review' ? 'Your preview is ready' : task.schedule
+      }}</span
+      ><span class="row-status">{{ action(task) }} <span aria-hidden="true">→</span></span></a
+    >
+  }
+  <p class="muted">You can save your progress and come back whenever you’re ready.</p>
+</div>
