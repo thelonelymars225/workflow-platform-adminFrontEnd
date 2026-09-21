@@ -1,105 +1,120 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { App } from './app';
+import { provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { routes } from './app.routes';
+import { PreviewStore, PREVIEW_STORAGE_KEY } from './preview/preview-store';
 
-describe('App', () => {
-  let http: HttpTestingController;
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [App], providers: [provideHttpClient(), provideHttpClientTesting()]
-    }).compileComponents();
-    http = TestBed.inject(HttpTestingController);
+// These exercise routed forms/state. Existing API contract tests remain in features/workflows.
+describe('Atlas task journeys', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
   });
-  afterEach(() => http.verify());
+  afterEach(() => localStorage.clear());
 
-  function start() {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    http.expectOne('/api/health').flush({ status: 'ok' });
-    return fixture;
-  }
-
-  it('shows loading and then the empty state', () => {
-    const fixture = start();
-    expect(fixture.nativeElement.textContent).toContain('Loading workflows');
-    http.expectOne('/api/workflows').flush([]);
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('h1').textContent).toContain('Workflows');
-    expect(fixture.nativeElement.textContent).toContain('No workflows yet');
+  it('opens the home page and routes to all three guided task types', async () => {
+    const harness = await RouterTestingHarness.create('/start');
+    expect(harness.routeNativeElement?.textContent).toContain(
+      'What would you like help with today?',
+    );
+    expect(harness.routeNativeElement?.querySelectorAll('.task-card').length).toBe(3);
+    const store = TestBed.inject(PreviewStore);
+    for (const kind of ['report', 'update', 'approval'] as const) {
+      const task = store.create(kind);
+      await harness.navigateByUrl(`/tasks/${task.id}/setup`);
+      expect(harness.routeNativeElement?.querySelectorAll('.step').length).toBe(3);
+    }
   });
 
-  it('validates whitespace without making a create request', () => {
-    const fixture = start();
-    http.expectOne('/api/workflows').flush([]);
-    fixture.componentInstance.name = '   ';
-    fixture.componentInstance.create();
-    expect(fixture.componentInstance.formError()).toContain('Enter a name');
-    http.expectNone(request => request.method === 'POST');
+  it('retains edited form values when moving to review and back', async () => {
+    const harness = await RouterTestingHarness.create('/tasks/report/setup');
+    // Resolve the active routed page, beneath the workspace shell.
+    const page = TestBed.inject(PreviewStore);
+    const input = harness.routeNativeElement!.querySelector<HTMLInputElement>('#document')!;
+    input.value = 'October actuals.xlsx';
+    input.dispatchEvent(new Event('input'));
+    harness.detectChanges();
+    await harness.fixture.whenStable();
+    harness
+      .routeNativeElement!.querySelector<HTMLFormElement>('form')!
+      .dispatchEvent(new Event('submit'));
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(page.tasks().find((t) => t.id === 'report')?.document).toBe('October actuals.xlsx');
+    expect(harness.routeNativeElement?.textContent).toContain('Take a look before you share.');
+    await harness.navigateByUrl('/tasks/report/setup');
+    expect(harness.routeNativeElement!.querySelector<HTMLInputElement>('#document')!.value).toBe(
+      'October actuals.xlsx',
+    );
   });
 
-  it('prevents duplicate pending creates and reloads after a successful response', () => {
-    const fixture = start();
-    http.expectOne('/api/workflows').flush([]);
-    const app = fixture.componentInstance;
-    app.name = '  Example  ';
-    app.create();
-    app.create();
-    expect(app.saving()).toBe(true);
-    const request = http.expectOne('/api/workflows');
-    expect(request.request.body).toEqual({ name: 'Example', description: null });
-    const row = { id: '123', name: 'Example', description: null, createdAt: '2026-09-16T00:00:00Z', updatedAt: '2026-09-16T00:00:00Z' };
-    request.flush(row, { status: 201, statusText: 'Created' });
-    http.expectOne('/api/health').flush({ status: 'ok' });
-    http.expectOne('/api/workflows').flush([row]);
-    fixture.detectChanges();
-    expect(app.saving()).toBe(false);
-    expect(fixture.nativeElement.textContent).toContain('Example');
+  it('keeps an incomplete setup on the form with an actionable error', async () => {
+    const harness = await RouterTestingHarness.create('/tasks/finance/setup');
+    const input = harness.routeNativeElement!.querySelector<HTMLInputElement>('#document')!;
+    input.value = '   ';
+    input.dispatchEvent(new Event('input'));
+    harness.detectChanges();
+    await harness.fixture.whenStable();
+    harness
+      .routeNativeElement!.querySelector<HTMLFormElement>('form')!
+      .dispatchEvent(new Event('submit'));
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent).toContain(
+      'complete the highlighted fields',
+    );
+    expect(input.getAttribute('aria-invalid')).toBe('true');
+    expect(
+      TestBed.inject(PreviewStore)
+        .tasks()
+        .find((t) => t.id === 'finance')?.status,
+    ).toBe('draft');
   });
 
-  it('shows API failures and preserves rejected form input', () => {
-    const fixture = start();
-    http.expectOne('/api/workflows').flush({}, { status: 503, statusText: 'Unavailable' });
-    const app = fixture.componentInstance;
-    app.name = 'Keep this';
-    app.create();
-    http.expectOne('/api/workflows').flush({}, { status: 400, statusText: 'Bad Request' });
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Could not load workflows');
-    expect(fixture.nativeElement.textContent).toContain('API rejected');
-    expect(app.name).toBe('Keep this');
-    expect(app.saving()).toBe(false);
+  it('shows a confirmation for update and approval previews without implying delivery', async () => {
+    const harness = await RouterTestingHarness.create('/start');
+    const store = TestBed.inject(PreviewStore);
+    for (const kind of ['update', 'approval'] as const) {
+      const task = store.create(kind);
+      store.save({ ...task, status: 'review' });
+      await harness.navigateByUrl(`/tasks/${task.id}/review`);
+      const label = kind === 'update' ? 'Turn on weekly update' : 'Send approval request';
+      const button = Array.from(
+        harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>('button'),
+      ).find((b) => b.textContent?.trim() === label)!;
+      const dialog = Array.from(
+        harness.routeNativeElement!.querySelectorAll<HTMLDialogElement>('dialog'),
+      ).find((d) => d.getAttribute('aria-label')?.includes('preview'))!;
+      // jsdom lacks showModal. This tests wiring/content; native focus and Escape remain browser checks.
+      const showModal = vi.fn(() => dialog.setAttribute('open', ''));
+      Object.defineProperty(dialog, 'showModal', { value: showModal, configurable: true });
+      button.click();
+      harness.detectChanges();
+      expect(showModal).toHaveBeenCalledOnce();
+      expect(harness.routeNativeElement!.querySelector('dialog[open]')?.textContent).toContain(
+        'Nothing was scheduled or sent.',
+      );
+      expect(store.tasks().find((t) => t.id === task.id)?.status).toBe(
+        kind === 'update' ? 'scheduled' : 'waiting',
+      );
+    }
   });
 
-  it('shows unavailable API feedback and retains input after a failed create', () => {
-    const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    http.expectOne('/api/health').error(new ProgressEvent('error'));
-    http.expectOne('/api/workflows').error(new ProgressEvent('error'));
-    const app = fixture.componentInstance;
-    app.name = 'Retry me';
-    app.description = 'Keep my description';
-    app.create();
-    http.expectOne('/api/workflows').flush({}, { status: 503, statusText: 'Unavailable' });
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('API unavailable');
-    expect(fixture.nativeElement.textContent).toContain('Your entries are kept');
-    expect(app.name).toBe('Retry me');
-    expect(app.description).toBe('Keep my description');
-    expect(app.saving()).toBe(false);
-  });
-
-  it('validates field lengths before sending a request', () => {
-    const fixture = start();
-    http.expectOne('/api/workflows').flush([]);
-    const app = fixture.componentInstance;
-    app.name = 'x'.repeat(201);
-    app.create();
-    expect(app.formError()).toContain('Enter a name');
-    app.name = 'Valid';
-    app.description = 'x'.repeat(2001);
-    app.create();
-    expect(app.formError()).toContain('Enter a name');
-    http.expectNone(request => request.method === 'POST');
+  it('requires review before completing and never completes an unknown task', async () => {
+    const harness = await RouterTestingHarness.create('/tasks/finance/complete');
+    expect(harness.routeNativeElement?.textContent).toContain('Review this task first.');
+    await harness.navigateByUrl('/tasks/missing/review');
+    expect(harness.routeNativeElement?.textContent).toContain('Let’s get you back on track.');
+    await harness.navigateByUrl('/tasks/report/review');
+    const button = Array.from(
+      harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>('button'),
+    ).find((b) => b.textContent?.includes('Approve & send'))!;
+    button.click();
+    await harness.fixture.whenStable();
+    harness.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Your report preview is complete.');
+    expect(harness.routeNativeElement?.textContent).toContain('Nothing was sent');
+    const stored = JSON.parse(localStorage.getItem(PREVIEW_STORAGE_KEY)!);
+    expect(stored.tasks.find((t: { id: string }) => t.id === 'report').status).toBe('complete');
   });
 });

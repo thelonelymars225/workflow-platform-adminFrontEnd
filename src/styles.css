@@ -1,3 +1,280 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
+@import './theme.css';
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/atlas/dm-sans-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 1000;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    @apply bg-canvas font-sans text-ink;
+    font-optical-sizing: none;
+    font-variation-settings: 'opsz' 14;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  h1 {
+    @apply text-heading font-medium leading-[1.2] tracking-[-0.025em];
+  }
+  h2 {
+    @apply text-subheading font-medium;
+  }
+  h3 {
+    @apply text-body font-bold;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply scroll-m-6;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  select {
+    @apply cursor-pointer;
+  }
+  button:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
+  :focus-visible {
+    @apply outline-3 outline-offset-4 outline-accent;
+  }
+  @media (max-width: 600px) {
+    h1 {
+      @apply text-title;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .button {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-button border border-accent bg-accent px-6 py-2.5 text-center font-bold text-surface;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s;
+  }
+  .button:hover:not(:disabled) {
+    @apply bg-accent-hover;
+  }
+  .button.secondary {
+    @apply border-border bg-surface text-ink;
+  }
+  .button.secondary:hover {
+    @apply border-border-hover bg-tint;
+  }
+  .text-button {
+    @apply min-h-12 border-0 bg-transparent px-0 py-3 text-left text-accent;
+  }
+  .text-button:hover {
+    @apply underline;
+  }
+
+  .stack,
+  .stack-small,
+  .card-copy {
+    @apply flex flex-col;
+  }
+  .stack {
+    @apply gap-6;
+  }
+  .stack-small {
+    @apply gap-4;
+  }
+  .card-copy {
+    @apply gap-3;
+  }
+  .actions,
+  .toolbar {
+    @apply flex flex-wrap items-center gap-4;
+  }
+  .toolbar {
+    @apply justify-between;
+  }
+  .section-title {
+    @apply text-section font-medium;
+  }
+  .muted,
+  .hint,
+  .row-detail {
+    @apply text-muted;
+  }
+  .hint,
+  .eyebrow {
+    @apply text-small;
+  }
+  .eyebrow {
+    @apply font-bold;
+  }
+  .accent {
+    @apply text-accent;
+  }
+  .success {
+    @apply text-success;
+  }
+  .error {
+    @apply text-error;
+  }
+  .panel {
+    @apply rounded-panel border border-border bg-surface p-6;
+  }
+  .two-columns {
+    @apply grid grid-cols-2 gap-6;
+  }
+  .card-grid,
+  .steps {
+    @apply grid grid-cols-3 gap-6;
+  }
+  .task-card {
+    @apply flex w-full flex-col gap-4 p-6 text-left;
+  }
+  .task-card:hover {
+    @apply border-card-border-hover shadow-card;
+  }
+  .task-card img {
+    @apply size-11 shrink-0;
+  }
+  .card-copy .cta {
+    @apply font-bold text-accent;
+  }
+
+  .task-row {
+    @apply grid min-h-19 w-full items-center gap-4 rounded-button border border-border bg-surface p-5 text-left;
+    grid-template-columns: minmax(0, 1fr) 200px 210px;
+  }
+  a.task-row:hover,
+  button.task-row:hover {
+    @apply border-card-border-hover bg-row-hover;
+  }
+  .row-title {
+    @apply font-medium wrap-anywhere;
+  }
+  .row-status {
+    @apply font-medium text-success;
+  }
+  .tabs {
+    @apply flex flex-wrap gap-2;
+  }
+  .tabs button,
+  .tabs a {
+    @apply inline-flex min-h-11 items-center rounded-lg border-0 bg-transparent px-4 py-2.5 text-muted;
+  }
+  .tabs [aria-pressed='true'],
+  .tabs [aria-current='page'] {
+    @apply bg-tint font-bold text-accent;
+  }
+
+  /* Native inputs/selects share a theme; .field is the inset form variant. */
+  .control,
+  .field input,
+  .field select,
+  .field textarea {
+    @apply w-full min-w-0 bg-surface text-ink;
+  }
+  .control {
+    @apply min-h-12 rounded-control border border-border px-4 py-3;
+  }
+  .field {
+    @apply flex min-w-0 flex-col gap-1.5 rounded-control border border-border bg-surface p-4;
+  }
+  .field label,
+  .field-label {
+    @apply text-small text-muted;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    @apply -my-1 min-h-11 rounded-none border-0 border-b border-control-border px-0 py-2;
+  }
+  .field textarea {
+    @apply min-h-25 resize-y;
+  }
+  .field:has([aria-invalid='true']) {
+    @apply border-error;
+  }
+  .field:focus-within {
+    @apply border-accent;
+  }
+  .check-row {
+    @apply flex min-h-12 cursor-pointer items-center gap-3;
+  }
+  .check-row input {
+    @apply size-5.5 accent-accent;
+  }
+  .notice {
+    @apply rounded-button border border-border bg-tint px-5 py-4 text-muted;
+  }
+  .empty {
+    @apply px-6 py-12 text-center;
+  }
+  .empty h2 {
+    @apply mb-3;
+  }
+  .empty .button {
+    @apply mt-6;
+  }
+
+  @media (max-width: 1100px) {
+    .task-row {
+      grid-template-columns: minmax(0, 1fr) 160px 160px;
+    }
+    .steps {
+      @apply gap-4;
+    }
+    .steps .panel {
+      @apply p-5;
+    }
+  }
+  @media (max-width: 900px) {
+    .card-grid {
+      @apply grid-cols-2;
+    }
+    .steps {
+      @apply grid-cols-1;
+    }
+    .task-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .row-detail {
+      grid-column: 1;
+    }
+    .row-status {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+  }
+  @media (max-width: 600px) {
+    .card-grid,
+    .two-columns {
+      @apply grid-cols-1;
+    }
+    .actions {
+      @apply items-stretch;
+    }
+    .actions > .button {
+      flex: 1 1 auto;
+    }
+    .task-row {
+      @apply grid-cols-1 gap-2;
+    }
+    .row-detail,
+    .row-status {
+      @apply col-auto row-auto;
+    }
+    .panel {
+      @apply p-5;
+    }
+  }
+}

@@ -1,0 +1,104 @@
+<div class="stack">
+  <app-page-heading
+    [breadcrumb]="store.preferences().workspace + ' / People'"
+    title="The right people, with the right access."
+    description="Invite teammates and choose what they can see and do."
+  />
+  <div class="toolbar">
+    <div class="tabs" aria-label="People views">
+      @for (label of tabs; track label) {
+        <button [attr.aria-pressed]="tab() === label" (click)="tab.set(label)">
+          {{ label }}{{ label === 'People' ? ' (' + store.members().length + ')' : '' }}
+        </button>
+      }
+    </div>
+    <button class="button" (click)="open()">+ Invite someone</button>
+  </div>
+  @if (feedback()) {
+    <p class="notice" role="status">{{ feedback() }}</p>
+  }
+  @switch (tab()) {
+    @case ('People') {
+      <section class="stack" aria-label="Workspace members">
+        @for (person of store.members(); track person.email) {
+          <div class="task-row">
+            <span class="row-title"
+              ><span class="hint" aria-hidden="true">{{ initials(person.name) }} &nbsp; </span
+              >{{
+                person.role === 'Owner' ? store.preferences().displayName + ' (you)' : person.name
+              }}</span
+            ><span class="row-detail">{{ person.role }}</span
+            ><span class="row-status">{{ person.status }}</span>
+          </div>
+        }
+      </section>
+    }
+    @case ('Access rules') {
+      <section class="stack" aria-label="Role permissions">
+        @for (role of roles; track role.name) {
+          <article class="panel stack-small">
+            <h2>{{ role.name }}</h2>
+            <p class="muted">{{ role.description }}</p>
+          </article>
+        }
+      </section>
+    }
+    @case ('Recent changes') {
+      <section class="stack" aria-label="Recent invitations">
+        @for (person of store.members().slice(3); track person.email) {
+          <div class="task-row">
+            <span class="row-title">{{ person.email }}</span
+            ><span class="row-detail">{{ person.role }}</span
+            ><span class="row-status">{{ person.status }}</span>
+          </div>
+        }
+      </section>
+    }
+  }
+  <h2 class="section-title">Workspace access</h2>
+  <a class="task-row" routerLink="/settings" [queryParams]="{ section: 'security' }"
+    ><span class="row-title">Your team uses company sign-in.</span
+    ><span class="row-detail">Managed by the owner</span
+    ><span class="row-status">View settings →</span></a
+  >
+</div>
+<app-modal #invitation title="Bring your team together.">
+  <p class="muted">
+    Invite someone to {{ store.preferences().workspace }} and choose what they can do.
+  </p>
+  <form #inviteForm="ngForm" class="stack" (ngSubmit)="invite(inviteForm)" novalidate>
+    <div class="field">
+      <label for="invite-email">Work email</label
+      ><input
+        id="invite-email"
+        name="email"
+        type="email"
+        [(ngModel)]="email"
+        required
+        email
+        maxlength="254"
+        autocomplete="off"
+        aria-describedby="invite-hint"
+      /><small id="invite-hint" class="hint">Preview only. No email will be sent.</small>
+    </div>
+    <div class="field">
+      <label for="invite-role">What they can do</label
+      ><select id="invite-role" name="role" [(ngModel)]="role">
+        <option>Viewer</option>
+        <option>Member</option>
+        <option>Administrator</option></select
+      ><small class="hint">{{
+        role === 'Viewer'
+          ? 'View shared tasks and their results.'
+          : role === 'Member'
+            ? 'Create tasks and review their results.'
+            : 'Manage people and workspace settings.'
+      }}</small>
+    </div>
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+    <button class="button" type="submit">Preview invitation</button
+    ><button class="button secondary" type="button" (click)="invitation.close()">Cancel</button>
+  </form>
+</app-modal>

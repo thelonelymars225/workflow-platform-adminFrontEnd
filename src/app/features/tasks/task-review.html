@@ -1,0 +1,133 @@
+@if (task(); as task) {
+  <div class="stack">
+    <app-page-heading
+      [breadcrumb]="task.name + ' / Review'"
+      [title]="copy[task.kind].reviewTitle"
+      [description]="copy[task.kind].reviewGuidance"
+    />
+    <div class="review-grid">
+      <article class="panel report-preview stack">
+        <p class="eyebrow accent">
+          Sample preview ·
+          {{
+            task.kind === 'report'
+              ? task.period
+              : task.kind === 'update'
+                ? task.recipient
+                : 'Approval request'
+          }}
+        </p>
+        @switch (task.kind) {
+          @case ('report') {
+            <h2>A month of steady progress.</h2>
+            <p>
+              The team completed 12 projects this month. Delivery stayed on track, with three open
+              questions needing attention before next month.
+            </p>
+            <p class="muted">12 projects completed · 94% delivered on time</p>
+            <p class="muted">
+              Next: resolve the open questions and confirm next month’s priorities.
+            </p>
+          }
+          @case ('update') {
+            <h2>This week on {{ task.document }}</h2>
+            <p>
+              We connected the database and team workspace. Next week: finish sign-in and try the
+              first complete task.
+            </p>
+            <p class="muted">Completed: 4 tasks · In progress: 2</p>
+            <p class="muted">
+              Next decision: choose the company sign-in service.<br />From: {{ task.document }} /
+              {{ task.source }}
+            </p>
+          }
+          @case ('approval') {
+            <h2>Please review {{ task.document }}.</h2>
+            <p>
+              {{ task.recipient.split(' ')[0] }}, please review the attached document and approve it
+              or request changes before {{ task.dueDate | date: 'd MMMM' }}.
+            </p>
+            <p class="muted">
+              Document: {{ task.document }}<br />Requested by: {{ store.preferences().displayName
+              }}<br />Decision due: {{ task.dueDate | date: 'd MMMM yyyy' }}
+            </p>
+          }
+        }
+      </article>
+      <aside class="stack-small" aria-label="Review details">
+        <div class="field">
+          <span class="field-label">{{
+            task.kind === 'update'
+              ? 'Post to'
+              : task.kind === 'approval'
+                ? 'Send request to'
+                : 'Share with'
+          }}</span
+          ><span>{{ task.recipient }}</span
+          ><small class="hint">{{
+            task.kind === 'report'
+              ? '3 people · By email'
+              : task.kind === 'update'
+                ? 'Slack · 8 team members'
+                : 'Due ' + (task.dueDate | date: 'd MMMM yyyy')
+          }}</small>
+        </div>
+        <div class="field">
+          <span class="field-label">{{
+            task.kind === 'update' ? 'Project checked' : 'Files checked'
+          }}</span
+          ><span>{{ task.document }}</span
+          ><small class="hint">{{ task.source }} · Sample content</small>
+        </div>
+        <p class="muted">Only the people shown here would receive this in a connected workspace.</p>
+      </aside>
+    </div>
+    <div class="task-row">
+      <span class="row-title">{{ files() }}</span
+      ><span class="row-detail">{{
+        task.kind === 'report'
+          ? task.output
+          : task.kind === 'update'
+            ? '1 Slack message'
+            : '1 document'
+      }}</span
+      ><span class="row-status">{{
+        task.status === 'waiting' ? 'Awaiting a decision' : 'Ready to review'
+      }}</span>
+    </div>
+    @if (task.status === 'review') {
+      <div class="actions">
+        <button class="button" (click)="confirm()">{{ copy[task.kind].confirm }}</button
+        ><a class="button secondary" [routerLink]="['/tasks', task.id, 'setup']">Make changes</a>
+      </div>
+    } @else {
+      <div class="actions">
+        <a class="button" routerLink="/tasks">View my tasks</a
+        ><a class="button secondary" [routerLink]="['/tasks', task.id, 'setup']">Edit this task</a>
+      </div>
+    }
+    <p class="muted">Preview workspace: this tries the next step. No files or messages are sent.</p>
+  </div>
+  <app-modal
+    #confirmation
+    [title]="
+      task.kind === 'update'
+        ? 'Your weekly update preview is ready.'
+        : 'Your request preview is saved.'
+    "
+  >
+    <p class="muted">
+      {{
+        task.kind === 'update'
+          ? task.schedule + '. Each preview will wait for your review before posting.'
+          : 'Reviewer: ' + task.recipient + '. The decision would stay with this task.'
+      }}
+    </p>
+    <p class="hint">This is a preview. Nothing was scheduled or sent.</p>
+    <a class="button" routerLink="/tasks" (click)="confirmation.close()">View my tasks</a>
+  </app-modal>
+} @else if (store.ready()) {
+  <app-not-found />
+} @else {
+  <p role="status">Opening your task…</p>
+}

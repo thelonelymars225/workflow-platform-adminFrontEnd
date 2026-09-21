@@ -1,0 +1,50 @@
+<main class="sign-in">
+  <section class="story">
+    <a class="brand" routerLink="/start">workFlow</a>
+    <p class="eyebrow">A little help with everyday work</p>
+    <h1><span>Less repeat work.</span> <span>More time for</span> <span>your day.</span></h1>
+    <p class="intro">
+      Prepare reports, keep your team updated,<br />and get decisions — one simple task at a time.
+    </p>
+    <div class="panel card-copy">
+      <p class="eyebrow accent">Start small</p>
+      <h2>Your next report, made easier.</h2>
+      <p class="muted">Choose your files. Check the preview. Share when you’re ready.</p>
+      <p class="accent"><strong>You stay in control.</strong></p>
+    </div>
+    <p>Built around the tools you already use.</p>
+  </section>
+  <section class="form-side" aria-labelledby="welcome">
+    <div class="stack sign-in-form">
+      <p class="eyebrow accent">Welcome to your workspace</p>
+      <h2 id="welcome">Welcome back.</h2>
+      <p class="intro muted">Use your work account. We’ll take it from there.</p>
+      <div class="field">
+        <label for="work-email">Work email</label
+        ><input
+          id="work-email"
+          type="email"
+          placeholder="you@company.com"
+          autocomplete="email"
+          aria-describedby="email-hint"
+        /><small id="email-hint" class="hint">Use the same account you use at work.</small>
+      </div>
+      <button class="button" (click)="signInHelp.open()">Continue with work account</button
+      ><button class="button secondary" (click)="signInHelp.open()">Continue with Google</button>
+      <p class="muted">Need help signing in? Ask your team’s administrator.</p>
+      <div class="preview-note stack-small">
+        <p class="hint">Atlas preview · Sign-in isn’t connected yet.</p>
+        <a class="text-button" routerLink="/start">Explore the sample workspace →</a>
+      </div>
+    </div>
+  </section>
+</main>
+<app-modal #signInHelp title="Your sign-in is still being set up."
+  ><p class="muted">
+    Company and Google sign-in will be available once your workspace is connected. You can explore
+    the sample workspace now.
+  </p>
+  <p class="hint">No account will be created, and your email won’t be sent or saved.</p>
+  <a class="button" routerLink="/start" (click)="signInHelp.close()">Explore the sample workspace</a
+  ><button class="button secondary" (click)="signInHelp.close()">Back</button></app-modal
+>

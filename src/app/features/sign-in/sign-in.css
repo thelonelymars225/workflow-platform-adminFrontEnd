@@ -1,0 +1,67 @@
+@reference '../../../styles.css';
+
+.sign-in {
+  @apply grid min-h-dvh;
+  grid-template-columns: 1fr 1fr;
+}
+.story {
+  @apply flex flex-col gap-8 bg-ink p-10 text-surface;
+}
+.brand {
+  @apply text-title font-bold;
+}
+.story h1 {
+  @apply text-[44px] font-medium leading-[1.45];
+}
+.story h1 span {
+  @apply block;
+}
+.intro {
+  @apply text-body;
+}
+.story .panel {
+  @apply max-w-[610px] text-ink;
+}
+.form-side {
+  @apply flex items-center justify-center p-10;
+}
+.sign-in-form {
+  @apply w-full max-w-sign-in;
+}
+.sign-in-form h2 {
+  @apply text-heading font-medium;
+}
+.preview-note {
+  @apply border-t border-border pt-4;
+}
+@media (max-width: 900px) {
+  .story,
+  .form-side {
+    @apply p-8;
+  }
+  .story h1 {
+    @apply text-[38px];
+  }
+}
+@media (max-width: 700px) {
+  .sign-in {
+    @apply grid-cols-1;
+  }
+  .story {
+    @apply gap-5 px-6 py-7;
+  }
+  .story h1 {
+    @apply text-[32px] leading-[1.2];
+  }
+  .story h1 span {
+    @apply inline;
+  }
+  .story .panel,
+  .story > .intro,
+  .story > p:last-child {
+    @apply hidden;
+  }
+  .form-side {
+    @apply px-6 py-8;
+  }
+}

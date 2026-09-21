@@ -1,0 +1,25 @@
+@reference '../../../styles.css';
+
+.review-grid {
+  @apply grid gap-6;
+  grid-template-columns: minmax(0, 2fr) minmax(260px, 1.2fr);
+}
+.report-preview {
+  @apply min-h-[388px] p-8;
+}
+.report-preview h2 {
+  @apply text-title;
+}
+@media (max-width: 1000px) {
+  .review-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(220px, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .review-grid {
+    @apply grid-cols-1;
+  }
+  .report-preview {
+    @apply min-h-0 p-6;
+  }
+}

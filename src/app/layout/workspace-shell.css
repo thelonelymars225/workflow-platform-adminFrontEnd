@@ -1,0 +1,77 @@
+@reference '../../styles.css';
+
+:host {
+  @apply block min-h-dvh;
+}
+.sidebar {
+  @apply fixed inset-y-0 left-0 flex w-sidebar flex-col gap-4 overflow-y-auto border-r border-border bg-surface p-6;
+}
+.brand {
+  @apply text-[26px] font-bold tracking-[-0.02em];
+}
+.workspace-name {
+  @apply text-small text-muted wrap-anywhere;
+}
+nav {
+  @apply flex flex-col gap-4;
+}
+nav a {
+  @apply flex min-h-12 items-center rounded-button px-4 py-3 font-bold;
+}
+nav a:hover,
+nav a.active {
+  @apply bg-tint;
+}
+.help-button {
+  @apply text-small;
+}
+.main-content {
+  @apply ml-sidebar min-h-dvh max-w-workspace p-10;
+  outline: none;
+}
+.preview-label {
+  @apply mt-auto flex flex-col gap-2 pt-8 text-[13px] text-muted;
+}
+.preview-label a {
+  @apply min-h-8 py-1.5 text-accent;
+}
+.storage-notice {
+  @apply mb-6;
+}
+.mobile-header {
+  @apply hidden;
+}
+.skip-link {
+  @apply fixed top-2 left-2 z-10 -translate-y-[160%] rounded-lg bg-surface px-5 py-3;
+}
+.skip-link:focus {
+  @apply translate-y-0;
+}
+@media (max-width: 1100px) {
+  .main-content {
+    @apply p-8;
+  }
+}
+@media (max-width: 760px) {
+  .mobile-header {
+    @apply flex items-center justify-between border-b border-border bg-surface px-5 py-4;
+  }
+  .sidebar {
+    @apply static hidden w-auto border-b p-5;
+  }
+  .sidebar.open {
+    @apply flex;
+  }
+  .desktop-brand {
+    @apply hidden;
+  }
+  .main-content {
+    @apply ml-0 min-h-[calc(100dvh-81px)] px-5 pt-6 pb-10;
+  }
+  nav {
+    @apply gap-2;
+  }
+  .preview-label {
+    @apply pt-0;
+  }
+}

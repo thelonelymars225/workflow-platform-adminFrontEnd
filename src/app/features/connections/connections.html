@@ -1,0 +1,74 @@
+<div class="stack">
+  <app-page-heading
+    [breadcrumb]="store.preferences().workspace + ' / Connected apps'"
+    title="Use the apps you already know."
+    description="Connect once, then choose which files each task can use."
+  />
+  <section class="card-grid" aria-label="Apps">
+    @for (app of apps; track app.id) {
+      <button class="panel task-card" (click)="show(app)">
+        <img [src]="'/atlas/' + app.id + '.svg'" alt="" width="44" height="44" /><span
+          class="card-copy"
+          ><span class="eyebrow accent">{{ app.category }} · {{ store.connections()[app.id] }}</span
+          ><span class="text-subheading font-medium">{{ app.name }}</span
+          ><span class="muted">{{ app.description }}</span
+          ><span class="cta"
+            >{{ action(app.id, app.name) }} <span aria-hidden="true">→</span></span
+          ></span
+        >
+      </button>
+    }
+  </section>
+  <button class="task-row" (click)="show(apps[0])">
+    <span class="row-title">You choose which files each task can use.</span
+    ><span class="row-detail">Your workspace</span><span class="row-status">Review access →</span>
+  </button>
+</div>
+<app-modal
+  #access
+  [title]="
+    selected().id === 'custom' ? 'Connect with a little help.' : 'Only the files you choose.'
+  "
+>
+  <p class="eyebrow success">{{ selected().name }} / {{ store.connections()[selected().id] }}</p>
+  <div class="field">
+    <span class="field-label">Workspace account</span
+    ><span>{{ store.preferences().workspace }}</span
+    ><small class="hint">Sample connection · Preview only</small>
+  </div>
+  <div class="field">
+    <span class="field-label">{{
+      selected().id === 'slack' ? 'Channel this app can use' : 'Access you would allow'
+    }}</span
+    ><span>{{
+      selected().id === 'slack'
+        ? '#project-updates'
+        : selected().id === 'drive'
+          ? 'Finance / Monthly reports'
+          : 'Only the files and information you select'
+    }}</span
+    ><small class="hint">Review this access before connecting your real account.</small>
+  </div>
+  @if (selected().id === 'custom') {
+    <p class="muted">
+      Your workspace administrator can help choose and configure an app for your team.
+    </p>
+    <a class="button secondary" routerLink="/people" (click)="access.close()"
+      >See workspace administrators</a
+    >
+  } @else if (store.connections()[selected().id] !== 'Connected') {
+    <p class="hint">
+      Try the connected state in this preview. Account sign-in will be available when this app is
+      set up.
+    </p>
+    <button class="button" (click)="connect()">Try connection preview</button>
+  }
+  @if (feedback()) {
+    <p class="notice" role="status">{{ feedback() }}</p>
+  }
+  <button class="button secondary" (click)="access.close()">Done</button>
+  <p class="hint">
+    In a connected workspace, disconnecting pauses the tasks that use this app. Their saved work is
+    kept.
+  </p>
+</app-modal>

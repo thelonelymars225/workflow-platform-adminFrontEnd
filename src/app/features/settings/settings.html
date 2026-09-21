@@ -1,0 +1,114 @@
+<div class="stack">
+  <app-page-heading
+    [breadcrumb]="store.preferences().workspace + ' / Settings'"
+    title="Make workFlow work your way."
+    description="Choose comfortable defaults. You can change them whenever you need."
+  />
+  <div class="tabs" aria-label="Settings sections">
+    @for (section of tabs; track section.id) {
+      <button [attr.aria-pressed]="tab() === section.id" (click)="tab.set(section.id)">
+        {{ section.label }}
+      </button>
+    }
+  </div>
+  <form class="stack" (ngSubmit)="save()" novalidate>
+    @switch (tab()) {
+      @case ('workspace') {
+        <div class="two-columns">
+          <div class="field">
+            <label for="workspace">Workspace name</label
+            ><input
+              id="workspace"
+              name="workspace"
+              [(ngModel)]="form.workspace"
+              maxlength="80"
+              required
+            /><small class="hint">Visible to everyone in this workspace.</small>
+          </div>
+          <div class="field">
+            <label for="timezone">Default timezone</label
+            ><select id="timezone" name="timezone" [(ngModel)]="form.timezone">
+              <option value="Asia/Riyadh">Riyadh · UTC+3</option>
+              <option value="Asia/Dubai">Dubai · UTC+4</option>
+              <option value="Europe/London">London</option>
+              <option value="America/New_York">New York</option></select
+            ><small class="hint">Used for task schedules.</small>
+          </div>
+        </div>
+        <h2 class="section-title">Sign-in & task preferences</h2>
+        <button type="button" class="task-row" (click)="tab.set('security')">
+          <span class="row-title">Company sign-in</span
+          ><span class="row-detail">Required by your team</span
+          ><span class="row-status">View sign-in settings</span>
+        </button>
+        <div class="task-row">
+          <span class="row-title">Review before sharing</span><span class="row-detail">On</span
+          ><span class="row-status">Keep this as my default</span>
+        </div>
+        <label class="task-row" for="reminders"
+          ><span class="row-title">Remind me when a preview is ready</span
+          ><span class="row-detail">Email + in-app</span
+          ><span class="check-row"
+            ><input
+              type="checkbox"
+              id="reminders"
+              name="reminders"
+              [(ngModel)]="form.reminders"
+            /><span>{{ form.reminders ? 'On' : 'Off' }}</span></span
+          ></label
+        >
+      }
+      @case ('profile') {
+        <div class="field">
+          <label for="display-name">Your name</label
+          ><input
+            id="display-name"
+            name="displayName"
+            [(ngModel)]="form.displayName"
+            maxlength="80"
+            required
+          /><small class="hint">The name your teammates will see.</small>
+        </div>
+      }
+      @case ('security') {
+        <section class="panel stack">
+          <h2>One account for your work.</h2>
+          <p class="muted">
+            Company sign-in will be managed by your workspace administrator. It isn’t connected in
+            this preview.
+          </p>
+          <a class="button secondary" routerLink="/sign-in">View the sign-in page</a>
+          <p class="hint">
+            Your preview does not create an account or change any access permissions.
+          </p>
+        </section>
+      }
+      @case ('notifications') {
+        <section class="panel stack">
+          <h2>A reminder when you need it.</h2>
+          <label class="check-row"
+            ><input
+              name="notificationReminders"
+              type="checkbox"
+              [(ngModel)]="form.reminders"
+            />Remind me when a preview is ready</label
+          >
+          <p class="muted">You’ll always be able to find your previews in My tasks.</p>
+        </section>
+      }
+    }
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+    @if (tab() !== 'security') {
+      <div class="actions"><button class="button" type="submit">Save changes</button></div>
+    }
+  </form>
+</div>
+<app-modal #saved title="Your changes are saved."
+  ><p class="muted">Your preferences will be used for this preview workspace in this browser.</p>
+  @if (store.storageNotice()) {
+    <p class="notice">{{ store.storageNotice() }}</p>
+  }
+  <button class="button" (click)="saved.close()">Done</button></app-modal
+>

@@ -1,0 +1,33 @@
+/* Tailwind v4 theme: values from the existing Atlas v2 design. */
+@theme {
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --color-canvas: #f6f8fc;
+  --color-surface: #fff;
+  --color-ink: #152541;
+  --color-muted: #4f6078;
+  --color-accent: #315fb7;
+  --color-accent-hover: #264e99;
+  --color-tint: #edf2fa;
+  --color-border: #dce3ef;
+  --color-border-hover: #b8c9e4;
+  --color-card-border-hover: #9bb3db;
+  --color-control-border: #c7d3e4;
+  --color-row-hover: #fcfdff;
+  --color-success: #167153;
+  --color-error: #9a322c;
+  --color-backdrop: #15254155;
+  --radius-control: 10px;
+  --radius-panel: 16px;
+  --radius-button: 12px;
+  --text-small: 14px;
+  --text-body: 18px;
+  --text-section: 20px;
+  --text-title: 28px;
+  --text-heading: 34px;
+  --text-subheading: 23px;
+  --shadow-card: 0 4px 16px #15254106;
+  --shadow-dialog: 0 24px 80px #15254126;
+  --container-workspace: 1520px;
+  --container-sign-in: 480px;
+  --spacing-sidebar: 224px;
+}
