@@ -9,7 +9,7 @@ import { Workflow, WorkflowApi } from '../../workflow-api';
   selector: 'app-workflows',
   imports: [FormsModule, DatePipe],
   templateUrl: './workflows.html',
-  styleUrl: './workflows.css',
+  styles: ':host { display: block; }',
 })
 export class Workflows {
   private readonly api = inject(WorkflowApi);

@@ -1,14 +1,14 @@
+@reference '../../../styles.css';
+
 .review-grid {
-  display: grid;
+  @apply grid gap-6;
   grid-template-columns: minmax(0, 2fr) minmax(260px, 1.2fr);
-  gap: 24px;
 }
 .report-preview {
-  padding: 32px;
-  min-height: 388px;
+  @apply min-h-[388px] p-8;
 }
 .report-preview h2 {
-  font-size: 28px;
+  @apply text-title;
 }
 @media (max-width: 1000px) {
   .review-grid {
@@ -17,10 +17,9 @@
 }
 @media (max-width: 900px) {
   .review-grid {
-    grid-template-columns: 1fr;
+    @apply grid-cols-1;
   }
   .report-preview {
-    min-height: 0;
-    padding: 24px;
+    @apply min-h-0 p-6;
   }
 }

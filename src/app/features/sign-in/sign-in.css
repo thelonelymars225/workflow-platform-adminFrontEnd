@@ -1,85 +1,67 @@
+@reference '../../../styles.css';
+
 .sign-in {
-  display: grid;
+  @apply grid min-h-dvh;
   grid-template-columns: 1fr 1fr;
-  min-height: 100dvh;
 }
 .story {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  background: var(--atlas-ink);
-  color: white;
-  padding: 40px;
+  @apply flex flex-col gap-8 bg-ink p-10 text-surface;
 }
 .brand {
-  font-size: 28px;
-  font-weight: 700;
+  @apply text-title font-bold;
 }
 .story h1 {
-  font-size: 44px;
-  line-height: 1.45;
-  font-weight: 500;
+  @apply text-[44px] font-medium leading-[1.45];
 }
 .story h1 span {
-  display: block;
+  @apply block;
 }
 .intro {
-  font-size: 18px;
+  @apply text-body;
 }
 .story .panel {
-  color: var(--atlas-ink);
-  max-width: 610px;
+  @apply max-w-[610px] text-ink;
 }
 .form-side {
-  padding: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @apply flex items-center justify-center p-10;
 }
 .sign-in-form {
-  width: 100%;
-  max-width: 480px;
+  @apply w-full max-w-sign-in;
 }
 .sign-in-form h2 {
-  font-size: 34px;
-  font-weight: 500;
+  @apply text-heading font-medium;
 }
 .preview-note {
-  border-top: 1px solid var(--atlas-border);
-  padding-top: 16px;
+  @apply border-t border-border pt-4;
 }
 @media (max-width: 900px) {
-  .story {
-    padding: 32px;
+  .story,
+  .form-side {
+    @apply p-8;
   }
   .story h1 {
-    font-size: 38px;
-  }
-  .form-side {
-    padding: 32px;
+    @apply text-[38px];
   }
 }
 @media (max-width: 700px) {
   .sign-in {
-    grid-template-columns: 1fr;
+    @apply grid-cols-1;
   }
   .story {
-    gap: 20px;
-    padding: 28px 24px;
+    @apply gap-5 px-6 py-7;
   }
   .story h1 {
-    font-size: 32px;
-    line-height: 1.2;
+    @apply text-[32px] leading-[1.2];
   }
   .story h1 span {
-    display: inline;
+    @apply inline;
   }
   .story .panel,
   .story > .intro,
   .story > p:last-child {
-    display: none;
+    @apply hidden;
   }
   .form-side {
-    padding: 32px 24px;
+    @apply px-6 py-8;
   }
 }

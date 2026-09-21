@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import './theme.css';
+
 @font-face {
   font-family: 'DM Sans';
   src: url('/atlas/dm-sans-latin.woff2') format('woff2');
@@ -6,401 +8,273 @@
   font-weight: 100 1000;
   font-display: swap;
 }
-:root {
-  --atlas-bg: #f6f8fc;
-  --atlas-surface: #fff;
-  --atlas-ink: #152541;
-  --atlas-muted: #4f6078;
-  --atlas-accent: #315fb7;
-  --atlas-tint: #edf2fa;
-  --atlas-border: #dce3ef;
-  --atlas-success: #167153;
-  --atlas-error: #9a322c;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  font-optical-sizing: none;
-  font-variation-settings: 'opsz' 14;
-  color: var(--atlas-ink);
-  background: var(--atlas-bg);
-  font-size: 16px;
-  line-height: 1.45;
-}
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-}
-h1,
-h2,
-h3,
-p {
-  margin: 0;
-}
-h1 {
-  font-size: 34px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.025em;
-}
-h2 {
-  font-size: 23px;
-  font-weight: 500;
-}
-h3 {
-  font-size: 18px;
-  font-weight: 700;
-}
-a {
-  color: inherit;
-  text-decoration: none;
-}
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-button,
-a,
-input,
-select,
-textarea {
-  -webkit-tap-highlight-color: transparent;
-  scroll-margin: 24px;
-}
-button,
-select {
-  cursor: pointer;
-}
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-:focus-visible {
-  outline: 3px solid var(--atlas-accent);
-  outline-offset: 4px;
-}
-[hidden] {
-  display: none !important;
-}
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 48px;
-  padding: 10px 24px;
-  border: 1px solid var(--atlas-accent);
-  border-radius: 12px;
-  background: var(--atlas-accent);
-  color: white;
-  font-weight: 700;
-  text-align: center;
-  transition:
-    background-color 0.15s,
-    border-color 0.15s;
-}
-.button:hover:not(:disabled) {
-  background: #264e99;
-}
-.button.secondary {
-  background: white;
-  color: var(--atlas-ink);
-  border-color: var(--atlas-border);
-}
-.button.secondary:hover {
-  background: var(--atlas-tint);
-  border-color: #b8c9e4;
-}
-.text-button {
-  color: var(--atlas-accent);
-  background: transparent;
-  border: 0;
-  padding: 12px 0;
-  min-height: 48px;
-  text-align: left;
-}
-.text-button:hover {
-  text-decoration: underline;
-}
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.stack-small {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.actions,
-.toolbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.toolbar {
-  justify-content: space-between;
-}
-.section-title {
-  font-size: 20px;
-  font-weight: 500;
-}
-.muted,
-.hint {
-  color: var(--atlas-muted);
-}
-.hint,
-.eyebrow {
-  font-size: 14px;
-}
-.eyebrow {
-  font-weight: 700;
-}
-.accent {
-  color: var(--atlas-accent);
-}
-.success {
-  color: var(--atlas-success);
-}
-.error {
-  color: var(--atlas-error);
-}
-.panel {
-  background: white;
-  border: 1px solid var(--atlas-border);
-  border-radius: 16px;
-  padding: 24px;
-}
-.two-columns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-}
-.card-grid,
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-}
-.task-card {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px;
-  text-align: left;
-  width: 100%;
-}
-.task-card:hover {
-  border-color: #9bb3db;
-  box-shadow: 0 4px 16px #15254106;
-}
-.task-card img {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-}
-.card-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.card-copy .cta {
-  color: var(--atlas-accent);
-  font-weight: 700;
-}
-.task-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 200px 210px;
-  align-items: center;
-  gap: 16px;
-  min-height: 76px;
-  padding: 20px;
-  border: 1px solid var(--atlas-border);
-  border-radius: 12px;
-  background: white;
-  text-align: left;
-  width: 100%;
-}
-a.task-row:hover,
-button.task-row:hover {
-  border-color: #9bb3db;
-  background: #fcfdff;
-}
-.row-title {
-  font-weight: 500;
-  overflow-wrap: anywhere;
-}
-.row-detail {
-  color: var(--atlas-muted);
-}
-.row-status {
-  color: var(--atlas-success);
-  font-weight: 500;
-}
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.tabs button,
-.tabs a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 10px 16px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--atlas-muted);
-}
-.tabs [aria-pressed='true'],
-.tabs [aria-current='page'] {
-  background: var(--atlas-tint);
-  color: var(--atlas-accent);
-  font-weight: 700;
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 16px;
-  border: 1px solid var(--atlas-border);
-  border-radius: 10px;
-  background: white;
-  min-width: 0;
-}
-.field label,
-.field-label {
-  font-size: 14px;
-  color: var(--atlas-muted);
-}
-.field input,
-.field select,
-.field textarea {
-  width: 100%;
-  min-width: 0;
-  min-height: 44px;
-  padding: 8px 0;
-  margin: -4px 0;
-  background: white;
-  color: var(--atlas-ink);
-  border: 0;
-  border-bottom: 1px solid #c7d3e4;
-  border-radius: 0;
-}
-.field textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-.field:has([aria-invalid='true']) {
-  border-color: var(--atlas-error);
-}
-.field:focus-within {
-  border-color: var(--atlas-accent);
-}
-.check-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 48px;
-  cursor: pointer;
-}
-.check-row input {
-  width: 22px;
-  height: 22px;
-  accent-color: var(--atlas-accent);
-}
-.notice {
-  padding: 16px 20px;
-  background: var(--atlas-tint);
-  border: 1px solid var(--atlas-border);
-  border-radius: 12px;
-  color: var(--atlas-muted);
-}
-.empty {
-  text-align: center;
-  padding: 48px 24px;
-}
-.empty h2 {
-  margin-bottom: 12px;
-}
-.empty .button {
-  margin-top: 24px;
-}
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-@media (max-width: 1100px) {
-  .task-row {
-    grid-template-columns: minmax(0, 1fr) 160px 160px;
+
+@layer base {
+  :root {
+    @apply bg-canvas font-sans text-ink;
+    font-optical-sizing: none;
+    font-variation-settings: 'opsz' 14;
+    font-size: 16px;
+    line-height: 1.45;
   }
-  .steps {
-    gap: 16px;
-  }
-  .steps .panel {
-    padding: 20px;
-  }
-}
-@media (max-width: 900px) {
-  .card-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .steps {
-    grid-template-columns: 1fr;
-  }
-  .task-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-  .row-detail {
-    grid-column: 1;
-  }
-  .row-status {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-  }
-}
-@media (max-width: 600px) {
   h1 {
-    font-size: 28px;
+    @apply text-heading font-medium leading-[1.2] tracking-[-0.025em];
   }
-  .card-grid,
-  .two-columns {
-    grid-template-columns: 1fr;
+  h2 {
+    @apply text-subheading font-medium;
   }
-  .actions {
-    align-items: stretch;
+  h3 {
+    @apply text-body font-bold;
   }
-  .actions > .button {
-    flex: 1 1 auto;
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply scroll-m-6;
+    -webkit-tap-highlight-color: transparent;
   }
-  .task-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
+  button,
+  select {
+    @apply cursor-pointer;
   }
-  .row-detail,
-  .row-status {
-    grid-column: auto;
-    grid-row: auto;
+  button:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
+  :focus-visible {
+    @apply outline-3 outline-offset-4 outline-accent;
+  }
+  @media (max-width: 600px) {
+    h1 {
+      @apply text-title;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .button {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-button border border-accent bg-accent px-6 py-2.5 text-center font-bold text-surface;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s;
+  }
+  .button:hover:not(:disabled) {
+    @apply bg-accent-hover;
+  }
+  .button.secondary {
+    @apply border-border bg-surface text-ink;
+  }
+  .button.secondary:hover {
+    @apply border-border-hover bg-tint;
+  }
+  .text-button {
+    @apply min-h-12 border-0 bg-transparent px-0 py-3 text-left text-accent;
+  }
+  .text-button:hover {
+    @apply underline;
+  }
+
+  .stack,
+  .stack-small,
+  .card-copy {
+    @apply flex flex-col;
+  }
+  .stack {
+    @apply gap-6;
+  }
+  .stack-small {
+    @apply gap-4;
+  }
+  .card-copy {
+    @apply gap-3;
+  }
+  .actions,
+  .toolbar {
+    @apply flex flex-wrap items-center gap-4;
+  }
+  .toolbar {
+    @apply justify-between;
+  }
+  .section-title {
+    @apply text-section font-medium;
+  }
+  .muted,
+  .hint,
+  .row-detail {
+    @apply text-muted;
+  }
+  .hint,
+  .eyebrow {
+    @apply text-small;
+  }
+  .eyebrow {
+    @apply font-bold;
+  }
+  .accent {
+    @apply text-accent;
+  }
+  .success {
+    @apply text-success;
+  }
+  .error {
+    @apply text-error;
   }
   .panel {
-    padding: 20px;
+    @apply rounded-panel border border-border bg-surface p-6;
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition: none !important;
-    scroll-behavior: auto !important;
+  .two-columns {
+    @apply grid grid-cols-2 gap-6;
+  }
+  .card-grid,
+  .steps {
+    @apply grid grid-cols-3 gap-6;
+  }
+  .task-card {
+    @apply flex w-full flex-col gap-4 p-6 text-left;
+  }
+  .task-card:hover {
+    @apply border-card-border-hover shadow-card;
+  }
+  .task-card img {
+    @apply size-11 shrink-0;
+  }
+  .card-copy .cta {
+    @apply font-bold text-accent;
+  }
+
+  .task-row {
+    @apply grid min-h-19 w-full items-center gap-4 rounded-button border border-border bg-surface p-5 text-left;
+    grid-template-columns: minmax(0, 1fr) 200px 210px;
+  }
+  a.task-row:hover,
+  button.task-row:hover {
+    @apply border-card-border-hover bg-row-hover;
+  }
+  .row-title {
+    @apply font-medium wrap-anywhere;
+  }
+  .row-status {
+    @apply font-medium text-success;
+  }
+  .tabs {
+    @apply flex flex-wrap gap-2;
+  }
+  .tabs button,
+  .tabs a {
+    @apply inline-flex min-h-11 items-center rounded-lg border-0 bg-transparent px-4 py-2.5 text-muted;
+  }
+  .tabs [aria-pressed='true'],
+  .tabs [aria-current='page'] {
+    @apply bg-tint font-bold text-accent;
+  }
+
+  /* Native inputs/selects share a theme; .field is the inset form variant. */
+  .control,
+  .field input,
+  .field select,
+  .field textarea {
+    @apply w-full min-w-0 bg-surface text-ink;
+  }
+  .control {
+    @apply min-h-12 rounded-control border border-border px-4 py-3;
+  }
+  .field {
+    @apply flex min-w-0 flex-col gap-1.5 rounded-control border border-border bg-surface p-4;
+  }
+  .field label,
+  .field-label {
+    @apply text-small text-muted;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    @apply -my-1 min-h-11 rounded-none border-0 border-b border-control-border px-0 py-2;
+  }
+  .field textarea {
+    @apply min-h-25 resize-y;
+  }
+  .field:has([aria-invalid='true']) {
+    @apply border-error;
+  }
+  .field:focus-within {
+    @apply border-accent;
+  }
+  .check-row {
+    @apply flex min-h-12 cursor-pointer items-center gap-3;
+  }
+  .check-row input {
+    @apply size-5.5 accent-accent;
+  }
+  .notice {
+    @apply rounded-button border border-border bg-tint px-5 py-4 text-muted;
+  }
+  .empty {
+    @apply px-6 py-12 text-center;
+  }
+  .empty h2 {
+    @apply mb-3;
+  }
+  .empty .button {
+    @apply mt-6;
+  }
+
+  @media (max-width: 1100px) {
+    .task-row {
+      grid-template-columns: minmax(0, 1fr) 160px 160px;
+    }
+    .steps {
+      @apply gap-4;
+    }
+    .steps .panel {
+      @apply p-5;
+    }
+  }
+  @media (max-width: 900px) {
+    .card-grid {
+      @apply grid-cols-2;
+    }
+    .steps {
+      @apply grid-cols-1;
+    }
+    .task-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .row-detail {
+      grid-column: 1;
+    }
+    .row-status {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+  }
+  @media (max-width: 600px) {
+    .card-grid,
+    .two-columns {
+      @apply grid-cols-1;
+    }
+    .actions {
+      @apply items-stretch;
+    }
+    .actions > .button {
+      flex: 1 1 auto;
+    }
+    .task-row {
+      @apply grid-cols-1 gap-2;
+    }
+    .row-detail,
+    .row-status {
+      @apply col-auto row-auto;
+    }
+    .panel {
+      @apply p-5;
+    }
   }
 }

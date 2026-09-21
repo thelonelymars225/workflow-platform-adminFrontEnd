@@ -1,18 +1,21 @@
-<div class="workflow-page">
-  <header>
+<div class="stack">
+  <header class="flex flex-col gap-2.5 py-2 text-muted">
     <p class="eyebrow">Your workspace / Saved workflows</p>
-    <h1>Workflows</h1>
+    <h1 class="text-ink">Workflows</h1>
     <p>
       Create and view workflows saved to your workspace. This page uses the connected workflow
       service.
     </p>
     <p role="status">{{ health() }}</p>
   </header>
-  <section aria-labelledby="create-heading">
-    <h2 id="create-heading">Create workflow</h2>
-    <form (ngSubmit)="create()" novalidate>
-      <label for="name">Name <span>(required)</span></label>
+  <section class="panel p-6" aria-labelledby="create-heading">
+    <h2 class="mb-4" id="create-heading">Create workflow</h2>
+    <form class="grid gap-3" (ngSubmit)="create()" novalidate>
+      <label class="mt-2 font-medium" for="name"
+        >Name <span class="text-muted">(required)</span></label
+      >
       <input
+        class="control"
         id="name"
         name="name"
         [(ngModel)]="name"
@@ -21,9 +24,12 @@
         [disabled]="saving()"
         aria-describedby="name-hint"
       />
-      <small id="name-hint">1–200 characters, not just spaces.</small>
-      <label for="description">Description <span>(optional)</span></label>
+      <small class="text-muted" id="name-hint">1–200 characters, not just spaces.</small>
+      <label class="mt-2 font-medium" for="description"
+        >Description <span class="text-muted">(optional)</span></label
+      >
       <textarea
+        class="control"
         id="description"
         name="description"
         [(ngModel)]="description"
@@ -37,15 +43,20 @@
       @if (success()) {
         <p class="success" role="status">{{ success() }}</p>
       }
-      <button type="submit" [disabled]="saving()">
+      <button class="button justify-self-start py-3" type="submit" [disabled]="saving()">
         {{ saving() ? 'Creating…' : 'Create workflow' }}
       </button>
     </form>
   </section>
-  <section aria-labelledby="list-heading" [attr.aria-busy]="loading()">
-    <div class="section-heading">
-      <h2 id="list-heading">Saved workflows</h2>
-      <button type="button" class="secondary" (click)="reload()" [disabled]="loading() || saving()">
+  <section class="panel p-6" aria-labelledby="list-heading" [attr.aria-busy]="loading()">
+    <div class="flex flex-wrap items-baseline justify-between gap-4">
+      <h2 class="mb-4" id="list-heading">Saved workflows</h2>
+      <button
+        type="button"
+        class="button secondary mb-4 py-3"
+        (click)="reload()"
+        [disabled]="loading() || saving()"
+      >
         Refresh list
       </button>
     </div>
@@ -58,14 +69,14 @@
     } @else {
       <ul>
         @for (workflow of workflows(); track workflow.id) {
-          <li>
+          <li class="border-t border-border py-5 wrap-anywhere">
             <h3>{{ workflow.name }}</h3>
             @if (workflow.description) {
-              <p>{{ workflow.description }}</p>
+              <p class="my-2.5 whitespace-pre-wrap">{{ workflow.description }}</p>
             }
-            <small
+            <small class="text-muted"
               >Created {{ workflow.createdAt | date: 'medium' }} ·
-              <code>{{ workflow.id }}</code></small
+              <code class="text-[12px]">{{ workflow.id }}</code></small
             >
           </li>
         }

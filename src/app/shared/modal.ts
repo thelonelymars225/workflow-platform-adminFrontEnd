@@ -13,15 +13,15 @@ import { Component, ElementRef, input, viewChild } from '@angular/core';
       width: min(600px, calc(100vw - 32px));
       max-height: calc(100dvh - 48px);
       margin: auto;
-      border: 1px solid var(--atlas-border);
-      border-radius: 16px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-panel);
       padding: 32px;
-      color: var(--atlas-ink);
-      background: white;
-      box-shadow: 0 24px 80px #15254126;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      box-shadow: var(--shadow-dialog);
     }
     dialog::backdrop {
-      background: #15254155;
+      background: var(--color-backdrop);
     }
     .modal-content {
       min-width: 0;

@@ -46,10 +46,17 @@ Requests and localStorage restoration run only after hydration. The production b
 - `src/app/features/`: home, tasks (setup/review/completion/list), connections, people, settings, sign-in, and the preserved API workflow screen.
 - `src/app/preview/`: typed sample data and isolated browser persistence. This is never an authentication or authorization boundary.
 - `src/app/shared/`: page heading, native modal dialog, and not-found view.
-- `src/styles.css`: Atlas colors, typography, controls, cards, rows, responsive grids, focus states, and reduced-motion handling.
+- `src/theme.css`: Tailwind v4 theme tokens taken from the existing Atlas design.
+- `src/styles.css`: shared controls, cards, rows, responsive grids, focus states, and reduced-motion handling.
 - `public/atlas/`: exact exported Figma icons and a self-hosted DM Sans font with its license.
 
 Native dialog elements provide focus containment, Escape dismissal, and focus restoration. Navigation uses real URLs and active states; filters expose pressed state; forms have labels and validation messages. Mobile uses a labeled expandable menu and stacked forms/cards. No new runtime dependencies were added.
+
+## Styling
+
+Tailwind v4 uses the CSS `@theme` configuration in `src/theme.css` (no JavaScript config is needed). Change design values there: semantic colors (`canvas`, `surface`, `ink`, `accent`, `border`), control/panel radii, shadows, typography, and container sizes. The tokens generate utilities such as `bg-surface`, `text-accent`, and `max-w-workspace` and are also available as CSS variables.
+
+Reuse `.button` / `.button.secondary`, `.field` for inset inputs and native dropdowns, `.control` for outlined controls, `.panel` for containers, and the existing grid/row patterns. These live in Tailwind's components layer so utilities can handle page-specific spacing without duplicating the component. Component styles use `@reference` to access the same theme without importing another copy of the global stylesheet. Keep the current responsive breakpoints and native control behavior; this theme does not introduce another visual design.
 
 ## Checks
 

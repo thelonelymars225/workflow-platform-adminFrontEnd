@@ -10,7 +10,7 @@
         <img [src]="'/atlas/' + app.id + '.svg'" alt="" width="44" height="44" /><span
           class="card-copy"
           ><span class="eyebrow accent">{{ app.category }} · {{ store.connections()[app.id] }}</span
-          ><span class="section-title" style="font-size: 23px">{{ app.name }}</span
+          ><span class="text-subheading font-medium">{{ app.name }}</span
           ><span class="muted">{{ app.description }}</span
           ><span class="cta"
             >{{ action(app.id, app.name) }} <span aria-hidden="true">→</span></span
