@@ -36,7 +36,9 @@
         maxlength="2000"
         rows="3"
         [disabled]="saving()"
+        aria-describedby="description-hint"
       ></textarea>
+      <small class="text-muted" id="description-hint">Up to 2,000 characters.</small>
       @if (formError()) {
         <p class="error" role="alert">{{ formError() }}</p>
       }
