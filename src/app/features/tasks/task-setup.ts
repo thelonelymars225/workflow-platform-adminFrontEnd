@@ -3,7 +3,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PreviewStore } from '../../preview/preview-store';
-import { PreviewTask, TASK_COPY } from '../../preview/preview-data';
+import { localDateAfter, PreviewTask, TASK_COPY } from '../../preview/preview-data';
 import { PageHeading } from '../../shared/page-heading';
 import { Modal } from '../../shared/modal';
 import { NotFound } from '../../shared/not-found';
@@ -23,6 +23,9 @@ export class TaskSetup {
   });
   readonly task = computed(() => this.store.tasks().find((t) => t.id === this.params().get('id')));
   readonly copy = TASK_COPY;
+  get earliestDueDate() {
+    return localDateAfter(0);
+  }
   readonly saved = viewChild.required<Modal>('saved');
   readonly error = signal('');
   form?: PreviewTask;
@@ -35,6 +38,11 @@ export class TaskSetup {
   save(preview: boolean, form: NgForm) {
     const task = this.form;
     if (!task || !this.store.ready()) return;
+    if (task.kind === 'approval' && task.dueDate < this.earliestDueDate) {
+      this.error.set('Choose a due date today or later before reviewing the request.');
+      form.form.markAllAsTouched();
+      return;
+    }
     if (
       form.invalid ||
       !task.document.trim() ||

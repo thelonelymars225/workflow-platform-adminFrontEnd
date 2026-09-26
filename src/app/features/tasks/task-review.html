@@ -95,9 +95,19 @@
         task.status === 'waiting' ? 'Awaiting a decision' : 'Ready to review'
       }}</span>
     </div>
+    @if (task.kind === 'approval' && task.dueDate < earliestDueDate) {
+      <p class="notice" role="alert">
+        The due date has passed. Choose a new date before continuing.
+      </p>
+    }
     @if (task.status === 'review') {
       <div class="actions">
-        <button class="button" (click)="confirm()">{{ copy[task.kind].confirm }}</button
+        <button
+          class="button"
+          [disabled]="task.kind === 'approval' && task.dueDate < earliestDueDate"
+          (click)="confirm()"
+        >
+          {{ copy[task.kind].confirm }}</button
         ><a class="button secondary" [routerLink]="['/tasks', task.id, 'setup']">Make changes</a>
       </div>
     } @else {

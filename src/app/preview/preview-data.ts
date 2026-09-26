@@ -90,6 +90,15 @@ export const TASK_COPY = {
   }
 >;
 
+export function localDateAfter(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function newTask(kind: TaskKind, id: string): PreviewTask {
   return {
     id,
@@ -122,7 +131,7 @@ export function newTask(kind: TaskKind, id: string): PreviewTask {
         : kind === 'update'
           ? 'Every Thursday · 16:00'
           : 'When I confirm',
-    dueDate: '2026-09-24',
+    dueDate: kind === 'approval' ? localDateAfter(7) : '',
     status: 'draft',
   };
 }
@@ -130,7 +139,7 @@ export function sampleTasks(): PreviewTask[] {
   return [
     { ...newTask('report', 'report'), status: 'review' },
     { ...newTask('update', 'update'), status: 'scheduled' },
-    { ...newTask('approval', 'approval'), status: 'waiting' },
+    { ...newTask('approval', 'approval'), dueDate: '2026-09-24', status: 'waiting' },
     { ...newTask('report', 'finance'), name: 'Quarterly finance summary', period: 'Q3 2026' },
   ];
 }

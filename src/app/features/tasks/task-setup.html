@@ -142,9 +142,12 @@
               id="due-date"
               name="dueDate"
               [(ngModel)]="task.dueDate"
+              [min]="earliestDueDate"
               required
               #dueDate="ngModel"
-              [attr.aria-invalid]="dueDate.invalid && dueDate.touched"
+              [attr.aria-invalid]="
+                (dueDate.invalid || task.dueDate < earliestDueDate) && dueDate.touched
+              "
             /><small class="hint">Send one reminder before the due date</small>
           </div>
         } @else {

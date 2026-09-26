@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PreviewStore } from '../../preview/preview-store';
-import { TASK_COPY } from '../../preview/preview-data';
+import { localDateAfter, TASK_COPY } from '../../preview/preview-data';
 import { PageHeading } from '../../shared/page-heading';
 import { Modal } from '../../shared/modal';
 import { NotFound } from '../../shared/not-found';
@@ -22,6 +22,9 @@ export class TaskReview {
   });
   readonly task = computed(() => this.store.tasks().find((t) => t.id === this.params().get('id')));
   readonly copy = TASK_COPY;
+  get earliestDueDate() {
+    return localDateAfter(0);
+  }
   readonly confirmation = viewChild.required<Modal>('confirmation');
   readonly files = computed(() => {
     const t = this.task();
@@ -31,7 +34,12 @@ export class TaskReview {
   });
   confirm() {
     const task = this.task();
-    if (!task || task.status !== 'review') return;
+    if (
+      !task ||
+      task.status !== 'review' ||
+      (task.kind === 'approval' && task.dueDate < this.earliestDueDate)
+    )
+      return;
     this.store.save({
       ...task,
       status:
