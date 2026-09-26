@@ -73,7 +73,7 @@ describe('Workflows', () => {
     http.expectOne('/api/workflows').flush({}, { status: 400, statusText: 'Bad Request' });
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Could not load workflows');
-    expect(fixture.nativeElement.textContent).toContain('API rejected');
+    expect(fixture.nativeElement.textContent).toContain('Check the name and description');
     expect(app.name).toBe('Keep this');
     expect(app.saving()).toBe(false);
   });

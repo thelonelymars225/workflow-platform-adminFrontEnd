@@ -31,6 +31,7 @@ export class Workflows {
   reload() {
     this.loading.set(true);
     this.loadError.set('');
+    this.health.set('Checking API…');
     this.api.health().subscribe({
       next: () => this.health.set('API connected'),
       error: () => this.health.set('API unavailable'),
@@ -42,7 +43,7 @@ export class Workflows {
         next: (rows) => this.workflows.set(rows),
         error: () =>
           this.loadError.set(
-            'Could not load workflows. Check that the API and PostgreSQL are running, then retry.',
+            'Could not load workflows. The workflow service may be unavailable. Try refreshing the list.',
           ),
       });
   }
@@ -72,8 +73,8 @@ export class Workflows {
         error: (error: HttpErrorResponse) =>
           this.formError.set(
             error.status === 400
-              ? 'The API rejected this workflow. Check the name and description and try again.'
-              : 'Could not create workflow. Check the API and PostgreSQL, then retry. Your entries are kept.',
+              ? 'This workflow could not be saved. Check the name and description and try again.'
+              : 'Could not create workflow. Try again in a moment. Your entries are kept.',
           ),
       });
   }

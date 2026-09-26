@@ -24,19 +24,39 @@ Open `http://localhost:4200`. The default `/start` route opens the clearly label
 | `/settings`        | Workspace name, profile, timezone, and reminder preferences saved in this browser for the preview.                                                            |
 | `/sign-in`         | Sign-in UI and explanatory dialog. No authentication, account creation, session, or route protection is simulated. The email is neither submitted nor stored. |
 
-The backend currently exposes workflow definition CRUD, not SSO, app connections, document processing, scheduling, delivery, workspace administration, or approval execution. These Atlas areas are explicitly marked as previews. Sample report/update content is fixed; choosing a file name does not read or analyze a real file. The completion view states that nothing was sent. This PR does not add backend endpoints or security enforcement.
+The backend currently supports creating and reading workflow definitions. SSO, app connections, document processing, scheduling, delivery, workspace administration, and approval execution are preview areas. Sample report/update content is fixed; choosing a file name does not read or analyze a real file. The completion view states that nothing was sent.
 
 Preview changes are stored under `workflow.atlas-preview.v1` in localStorage after hydration. Malformed/version-mismatched data falls back to the samples. Storage failures show a notice and retain changes for the current visit. Use sample information only; preview storage is not a credentials store. Clear that localStorage key to reset the sample workspace. `/workflows` uses the existing server API and does not mix its records with preview tasks.
 
-## API and SSR
+## Run with PostgreSQL and the API
 
-Start PostgreSQL and the [.NET backend](https://github.com/thelonelymars225/workflow-platform), following that repository's README, then run:
+Keep two terminals open: one in the [.NET backend repository](https://github.com/thelonelymars225/workflow-platform), and one in this frontend repository. The backend needs the .NET 10 SDK and a running PostgreSQL 16+ development server.
+
+First follow the backend README to create a development database and configure its connection string with user secrets or `ConnectionStrings__WorkflowDatabase`. From the **backend** repository, apply its migration and start the API:
 
 ```sh
+dotnet restore WorkflowBackend.sln --disable-parallel
+dotnet tool restore
+ASPNETCORE_ENVIRONMENT=Development dotnet ef database update --project services/Workflow.Api
 dotnet run --project services/Workflow.Api --launch-profile http
 ```
 
+The environment prefix uses macOS/Linux shell syntax. In PowerShell, set `$env:ASPNETCORE_ENVIRONMENT = 'Development'` before running `dotnet ef` so it can read user secrets. Leave the optional seed disabled to check the empty state of a new database.
+
+From the **frontend** repository in the second terminal:
+
+```sh
+npm ci
+npm start
+```
+
+Open `http://localhost:4200/workflows`. **API connected** confirms that the API responds; the saved workflow list confirms database access. Create a workflow, refresh the browser, then restart the API and refresh again. The same workflow ID should remain.
+
 `src/app/workflow-api.ts` remains the typed HttpClient boundary using same-origin `/api`. The single development API address is in `proxy.conf.json` (default `http://localhost:5159`). Restart `npm start` after changing it. No credentials belong in frontend code or the proxy configuration.
+
+If the page cannot load or save workflows, check `http://localhost:5159/health` for API liveness, `/health/db` for database connectivity, and `/api/workflows` for the migrated table. A successful health response alone does not confirm database access. Check the backend terminal, connection configuration, and migrations. If port 5159 changes, update `proxy.conf.json` to match.
+
+## Server rendering
 
 Requests and localStorage restoration run only after hydration. The production build prerenders eight static routes; task IDs use server rendering and hydrate to browser-local drafts. Production hosting needs the Angular SSR server for dynamic/deep links and same-origin `/api` routing; the standalone SSR server does not use the development proxy. API liveness does not imply PostgreSQL readiness.
 
@@ -77,4 +97,23 @@ For browser review, check desktop at 1440×960 and mobile at 390×844:
 6. Use Tab, Shift+Tab, Enter, and Escape to check the menu, links, form controls, modal focus, and focus return. Check narrow layout and 200% zoom for overflow.
 7. With the API/database running, use `/workflows` to create a definition, refresh, and restart the API to check persistence. Stop the API to check errors and retained input.
 
-Automated unit tests and production build have passed. The cloud browser could not reach localhost in the implementation environment, so visual/browser checks and live PostgreSQL persistence remain manual verification items. Do not treat the mocked HTTP tests as a live backend integration test.
+For the connected workflow page, also check:
+
+- A fresh database shows **No workflows yet**. A slow request shows **Loading workflows…**.
+- A name containing only spaces shows a validation message. The name and description controls enforce their 200 and 2,000 character limits.
+- While a create request is pending, **Creating…** is disabled. Repeated clicks must create only one record.
+- Stop the API, enter a name and description, and submit. The error should keep both entries. Restart the API and retry; the saved row should appear once.
+- With the API running but PostgreSQL unavailable, the page shows a load/save error while `/health` still responds. Restore PostgreSQL and use **Refresh list**.
+
+Record commit IDs, runtime versions, browser, and observed results in the pull request. Unit tests use mocked HTTP responses; the browser checks above verify the live API and database connection. Review the Atlas preview separately with the steps above when changing preview screens.
+
+### Verification on 2026-09-25
+
+Checked from fresh clones with Node 24.21.0, npm 11.12.1, .NET SDK 10.0.401, and PostgreSQL 16.14:
+
+- All 15 frontend tests passed. The production build completed and prerendered eight routes.
+- All 26 backend tests passed with PostgreSQL enabled; none were skipped. These cover migrations, persistence across API restarts, and repeatable sample seeding.
+- The documented migration and normal startup commands worked. Direct HTTP checks confirmed health and proxy responses, an empty list, validation errors, and a missing workflow response. A workflow created through the API kept the same ID and content after an API restart and appeared once in the proxied list.
+- Brave displayed **API connected** and **No workflows yet** on `/workflows`. Browser review covered only this initial state.
+
+Browser creation, persistence after browser refresh/API restart, visible validation and service errors, input retention and recovery, and the disabled pending-submit button still need verification. The setup pull requests remain drafts until those browser acceptance checks pass.
