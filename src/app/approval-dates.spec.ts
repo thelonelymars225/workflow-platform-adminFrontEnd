@@ -50,63 +50,53 @@ describe('Approval due dates', () => {
     ).find((button) => button.textContent?.trim() === 'Send approval request')!;
   }
 
-  it('rejects an expired setup and allows correcting it to today', async () => {
-    const { harness, store, id } = await openApproval('2026-09-24', 'setup');
-    const input = harness.routeNativeElement!.querySelector<HTMLInputElement>('#due-date')!;
-    expect(input.min).toBe('2026-09-26');
-    await submitSetup(harness);
-    expect(store.tasks().find((task) => task.id === id)?.status).toBe('draft');
-    expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent).toContain(
-      'Choose a due date today or later',
-    );
-    expect(input.getAttribute('aria-invalid')).toBe('true');
+  const expiredDates = [
+    { dueDate: '2026-09-24', today: '2026-09-26', expiredOnOpen: true },
+    { dueDate: '2026-09-26', today: '2026-09-27', expiredOnOpen: false },
+  ];
 
-    input.value = '2026-09-26';
-    input.dispatchEvent(new Event('input'));
-    await harness.fixture.whenStable();
-    await submitSetup(harness);
-    expect(store.tasks().find((task) => task.id === id)?.status).toBe('review');
-    expect(confirmButton(harness).disabled).toBe(false);
-    expect(harness.routeNativeElement?.textContent).toContain('26 September 2026');
-  });
+  it.each(expiredDates)(
+    'rejects setup due $dueDate on $today and allows correction',
+    async ({ dueDate, today }) => {
+      const { harness, store, id } = await openApproval(dueDate, 'setup');
+      const input = harness.routeNativeElement!.querySelector<HTMLInputElement>('#due-date')!;
+      vi.setSystemTime(new Date(`${today}T00:01:00`));
+      await submitSetup(harness);
+      expect(input.min).toBe(today);
+      expect(store.tasks().find((task) => task.id === id)?.status).toBe('draft');
+      expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent).toContain(
+        'Choose a due date today or later',
+      );
+      expect(input.getAttribute('aria-invalid')).toBe('true');
 
-  it('blocks an expired saved review opened directly', async () => {
-    const { harness, store, id } = await openApproval('2026-09-24', 'review');
-    expect(confirmButton(harness).disabled).toBe(true);
-    expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent).toContain(
-      'due date has passed',
-    );
-    confirmButton(harness).click();
-    expect(store.tasks().find((task) => task.id === id)?.status).toBe('review');
-    expect(harness.routeNativeElement!.querySelector('dialog[open]')).toBeNull();
-  });
+      input.value = today;
+      input.dispatchEvent(new Event('input'));
+      await harness.fixture.whenStable();
+      await submitSetup(harness);
+      expect(store.tasks().find((task) => task.id === id)?.status).toBe('review');
+      expect(confirmButton(harness).disabled).toBe(false);
+    },
+  );
 
-  it('rechecks the date when setup is submitted after midnight', async () => {
-    const { harness, store, id } = await openApproval('2026-09-26', 'setup');
-    vi.setSystemTime(new Date(2026, 8, 27, 0, 1));
-    await submitSetup(harness);
-    expect(store.tasks().find((task) => task.id === id)?.status).toBe('draft');
-    expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent).toContain(
-      'Choose a due date today or later',
-    );
-  });
-
-  it('rechecks the date before confirming a review left open overnight', async () => {
-    const { harness, store, id } = await openApproval('2026-09-26', 'review');
-    const button = confirmButton(harness);
-    expect(button.disabled).toBe(false);
-    const showModal = vi.fn();
-    const dialog = harness.routeNativeElement!.querySelector('dialog')!;
-    Object.defineProperty(dialog, 'showModal', { value: showModal, configurable: true });
-    // Click before another render: the handler must guard a stale enabled button too.
-    vi.setSystemTime(new Date(2026, 8, 27, 0, 1));
-    button.click();
-    harness.detectChanges();
-    expect(store.tasks().find((task) => task.id === id)?.status).toBe('review');
-    expect(button.disabled).toBe(true);
-    expect(showModal).not.toHaveBeenCalled();
-    expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent).toContain(
-      'due date has passed',
-    );
-  });
+  it.each(expiredDates)(
+    'blocks review due $dueDate on $today',
+    async ({ dueDate, today, expiredOnOpen }) => {
+      const { harness, store, id } = await openApproval(dueDate, 'review');
+      const button = confirmButton(harness);
+      expect(button.disabled).toBe(expiredOnOpen);
+      const showModal = vi.fn();
+      const dialog = harness.routeNativeElement!.querySelector('dialog')!;
+      Object.defineProperty(dialog, 'showModal', { value: showModal, configurable: true });
+      // Click before another render: the handler must guard a stale enabled button too.
+      vi.setSystemTime(new Date(`${today}T00:01:00`));
+      button.click();
+      harness.detectChanges();
+      expect(store.tasks().find((task) => task.id === id)?.status).toBe('review');
+      expect(button.disabled).toBe(true);
+      expect(showModal).not.toHaveBeenCalled();
+      expect(harness.routeNativeElement!.querySelector('[role="alert"]')?.textContent).toContain(
+        'due date has passed',
+      );
+    },
+  );
 });

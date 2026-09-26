@@ -22,8 +22,9 @@ export class TaskReview {
   });
   readonly task = computed(() => this.store.tasks().find((t) => t.id === this.params().get('id')));
   readonly copy = TASK_COPY;
-  get earliestDueDate() {
-    return localDateAfter(0);
+  get dueDateExpired() {
+    const task = this.task();
+    return task?.kind === 'approval' && task.dueDate < localDateAfter(0);
   }
   readonly confirmation = viewChild.required<Modal>('confirmation');
   readonly files = computed(() => {
@@ -34,12 +35,7 @@ export class TaskReview {
   });
   confirm() {
     const task = this.task();
-    if (
-      !task ||
-      task.status !== 'review' ||
-      (task.kind === 'approval' && task.dueDate < this.earliestDueDate)
-    )
-      return;
+    if (!task || task.status !== 'review' || this.dueDateExpired) return;
     this.store.save({
       ...task,
       status:
