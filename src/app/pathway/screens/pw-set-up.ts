@@ -1,0 +1,190 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  afterNextRender,
+  computed,
+  inject,
+  Injector,
+  linkedSignal,
+  signal,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { map } from 'rxjs';
+import { PathwayJobs } from '../pathway-jobs';
+import { PwActionBar } from '../shared/pw-action-bar';
+import { PwButton } from '../shared/pw-button';
+import { PwField } from '../shared/pw-field';
+import { PwIcon } from '../shared/pw-icon';
+import { PwPathway } from '../shared/pw-pathway';
+import { StepType } from '../shared/pw-tile';
+
+const NOT_CHOSEN = 'Not chosen yet';
+
+/**
+ * 03 / Set up (Step 1 of 3): job description, editable four-tile pathway and the inline
+ * "You are changing the X step" editor. Saving the editor updates the tile.
+ */
+@Component({
+  selector: 'pw-set-up',
+  imports: [RouterLink, PwActionBar, PwButton, PwField, PwIcon, PwPathway],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'flex flex-col gap-5' },
+  template: `
+    @if (job(); as job) {
+      <header class="flex flex-col gap-2">
+        <p class="m-0 text-pw-label font-medium text-pw-accent">Step 1 of 3 · Set up</p>
+        <h1 class="m-0 text-pw-heading font-semibold">
+          <label for="pw-description">What do you need done? Say it in your own words.</label>
+        </h1>
+      </header>
+      <textarea
+        id="pw-description"
+        rows="1"
+        class="min-h-[88px] w-full resize-y rounded-2xl border-2 border-pw-muted bg-pw-surface p-6 font-pathway text-pw-body text-pw-ink"
+        [value]="job.description"
+        (input)="jobs.setDescription(job.id, $any($event.target).value)"
+      ></textarea>
+
+      <h2 class="m-0 text-pw-section font-semibold">
+        Here is the pathway I will follow. Tap a step to change it.
+      </h2>
+      <pw-pathway
+        [steps]="job.steps"
+        [editable]="true"
+        [selected]="editing()"
+        (edit)="startEditing($event)"
+      />
+
+      @if (editingStep(); as step) {
+        <form
+          class="flex flex-col gap-4 rounded-pw-tile border-2 border-pw-accent bg-pw-surface p-6"
+          [attr.aria-labelledby]="'pw-editing-title'"
+          (submit)="save($event)"
+        >
+          <div
+            class="flex flex-col gap-2 min-[900px]:flex-row min-[900px]:items-center min-[900px]:justify-between"
+          >
+            <h2
+              id="pw-editing-title"
+              class="m-0 flex items-center gap-2.5 text-pw-section font-semibold"
+            >
+              <pw-icon name="pencil" />You are changing the {{ stepName(step.type) }} step
+            </h2>
+            <button pw-button variant="quiet" type="button" (click)="closeEditor()">
+              Close without saving
+            </button>
+          </div>
+          <div class="flex flex-col gap-6 min-[1100px]:flex-row min-[1100px]:items-end">
+            <pw-field
+              class="min-[1100px]:w-[480px]"
+              [label]="step.fields[0].label"
+              [hint]="step.fields[0].hint"
+              [(value)]="draftA"
+            />
+            <pw-field
+              class="min-[1100px]:w-[480px]"
+              [label]="step.fields[1].label"
+              [hint]="step.fields[1].hint"
+              [(value)]="draftB"
+            />
+            <button pw-button type="submit">Save this step</button>
+          </div>
+        </form>
+      }
+
+      <p class="sr-only" role="status">{{ announcement() }}</p>
+      @if (error()) {
+        <p class="m-0 text-pw-body font-semibold text-pw-error" role="alert">{{ error() }}</p>
+      }
+
+      <pw-action-bar note="Nothing is sent yet. You will see a preview first.">
+        <button pw-button type="button" (click)="next(job.id)">Next: check the plan</button>
+        <a pw-button variant="secondary" routerLink="/pathway">Save for later</a>
+      </pw-action-bar>
+    } @else {
+      <h1 class="m-0 text-pw-heading font-semibold">We could not find that job.</h1>
+      <p class="m-0 text-pw-body text-pw-muted">
+        It may have been removed. Your other jobs are on Home.
+      </p>
+      <pw-action-bar>
+        <a pw-button routerLink="/pathway">Back to home</a>
+      </pw-action-bar>
+    }
+  `,
+})
+export class PwSetUp {
+  protected readonly jobs = inject(PathwayJobs);
+  private readonly router = inject(Router);
+  private readonly injector = inject(Injector);
+
+  private readonly id = toSignal(
+    inject(ActivatedRoute).paramMap.pipe(map((params) => params.get('id'))),
+  );
+  protected readonly job = computed(() => this.jobs.job(this.id()));
+
+  /** The Figma frame shows the Get step open, so start there. */
+  protected readonly editing = signal<StepType | null>('get');
+  protected readonly editingStep = computed(() => {
+    const type = this.editing();
+    return this.job()?.steps.find((s) => s.type === type);
+  });
+  /** Editor drafts reset whenever a different step is opened. */
+  protected readonly draftA = linkedSignal(() => this.editingStep()?.fields[0].value ?? '');
+  protected readonly draftB = linkedSignal(() => this.editingStep()?.fields[1].value ?? '');
+  protected readonly announcement = signal('');
+  protected readonly error = signal('');
+
+  protected stepName(type: StepType) {
+    return type[0].toUpperCase() + type.slice(1);
+  }
+
+  protected startEditing(type: StepType) {
+    this.editing.set(type);
+    this.error.set('');
+    this.announcement.set(`Changing the ${this.stepName(type)} step.`);
+    afterNextRender(
+      () => document.querySelector<HTMLInputElement>('form pw-field input')?.focus(),
+      {
+        injector: this.injector,
+      },
+    );
+  }
+
+  protected closeEditor() {
+    const type = this.editing();
+    this.editing.set(null);
+    this.announcement.set('Closed without saving.');
+    if (type) this.focusTile(type);
+  }
+
+  protected save(event: Event) {
+    event.preventDefault();
+    const job = this.job();
+    const type = this.editing();
+    if (!job || !type) return;
+    this.jobs.saveStep(job.id, type, [this.draftA(), this.draftB()]);
+    this.editing.set(null);
+    this.error.set('');
+    this.announcement.set(`${this.stepName(type)} step saved.`);
+    this.focusTile(type);
+  }
+
+  protected next(id: string) {
+    const missing = this.job()
+      ?.steps.filter((s) => s.title === NOT_CHOSEN)
+      .map((s) => this.stepName(s.type));
+    if (missing?.length) {
+      this.error.set(`Choose the ${missing.join(', ')} step first. Tap a step to change it.`);
+      return;
+    }
+    this.jobs.readyForCheck(id);
+    void this.router.navigate(['/pathway/jobs', id, 'check']);
+  }
+
+  private focusTile(type: StepType) {
+    afterNextRender(() => document.getElementById(`pw-tile-${type}`)?.focus(), {
+      injector: this.injector,
+    });
+  }
+}

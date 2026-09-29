@@ -8,6 +8,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/sign-in/sign-in').then((m) => m.SignIn),
   },
   {
+    path: 'pathway',
+    loadChildren: () => import('./pathway/pathway.routes').then((m) => m.pathwayRoutes),
+  },
+  {
     path: '',
     component: WorkspaceShell,
     children: [

@@ -28,6 +28,23 @@ The backend currently supports creating and reading workflow definitions. SSO, a
 
 Preview changes are stored under `workflow.atlas-preview.v1` in localStorage after hydration. Malformed/version-mismatched data falls back to the samples. Storage failures show a notice and retain changes for the current visit. Use sample information only; preview storage is not a credentials store. Clear that localStorage key to reset the sample workspace. `/workflows` uses the existing server API and does not mix its records with preview tasks.
 
+## V3 Pathway preview
+
+`/pathway` implements the [V3 / Pathway — Steps as a picture](https://www.figma.com/design/c7j7GsdR0CgqhNJjM9YyYl?node-id=63-5) direction alongside Atlas v2: every job is shown as **Get → Make → Check → Send** tiles joined by arrows.
+
+| Route                      | Figma frame   |
+| -------------------------- | ------------- |
+| `/pathway/sign-in`         | 01 / Sign in  |
+| `/pathway`                 | 02 / Home     |
+| `/pathway/jobs/:id/set-up` | 03 / Set up   |
+| `/pathway/jobs/:id/check`  | 04 / Check    |
+| `/pathway/jobs/:id/done`   | 05 / Done     |
+| Top bar → Help             | Dialog / Help |
+
+- Tokens: the `Pathway / Palette` variables and `Pathway/…` text styles are Tailwind theme tokens in `src/theme.css` (`bg-pw-*`, `text-pw-*`, `rounded-pw-*`). Lexend is self-hosted from `public/pathway/fonts`.
+- Shared components (Button, Field, Nav item, Top bar, Tile, Arrow, Status, pathway, mini pathway, action bar, help dialog) are in `src/app/pathway/shared`.
+- Data: `src/app/pathway/pathway-jobs.ts` is a **mock** in-memory service. The backend has no task/step model yet, so nothing is read or sent. Swap its internals for API calls later; screens only use its public methods.
+
 ## Run with PostgreSQL and the API
 
 Keep two terminals open: one in the [.NET backend repository](https://github.com/thelonelymars225/workflow-platform), and one in this frontend repository. The backend needs the .NET 10 SDK and a running PostgreSQL 16+ development server.
