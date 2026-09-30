@@ -42,8 +42,14 @@ Preview changes are stored under `workflow.atlas-preview.v1` in localStorage aft
 | Top bar → Help             | Dialog / Help |
 
 - Tokens: the `Pathway / Palette` variables and `Pathway/…` text styles are Tailwind theme tokens in `src/theme.css` (`bg-pw-*`, `text-pw-*`, `rounded-pw-*`). Lexend is self-hosted from `public/pathway/fonts`.
-- Shared components (Button, Field, Nav item, Top bar, Tile, Arrow, Status, pathway, mini pathway, action bar, help dialog) are in `src/app/pathway/shared`.
-- Data: `src/app/pathway/pathway-jobs.ts` is a **mock** in-memory service. The backend has no task/step model yet, so nothing is read or sent. Swap its internals for API calls later; screens only use its public methods.
+- Structure (`src/app/pathway`): each component has its own folder with a `.ts` class, `.html` view and `.spec.ts`.
+  - `pages/` — the five screens (`pw-sign-in`, `pw-home`, `pw-set-up`, `pw-check`, `pw-done`)
+  - `layout/pathway-shell` — top bar, page outlet and help dialog
+  - `shared/` — Button, Field, Nav item, Top bar, Tile, Arrow, Status, pathway, mini pathway, action bar, help dialog
+  - `data/` — `pathway.models.ts` (types), `pathway-mock-data.ts` (sample data), `pathway-jobs.ts` (service)
+  - `testing/` — shared test helpers
+- Styling is Tailwind utilities in the `.html` views; variants use `data-*`/`aria-*` attributes (`data-[variant=primary]:…`), and step colours use the `bg-pw-step` utility with `data-step`.
+- Data: `src/app/pathway/data/pathway-jobs.ts` is a **mock** in-memory service. The backend has no task/step model yet, so nothing is read or sent. Swap its internals for API calls later; screens only use its public methods.
 
 ## Run with PostgreSQL and the API
 

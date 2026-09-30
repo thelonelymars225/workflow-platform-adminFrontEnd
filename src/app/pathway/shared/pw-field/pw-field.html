@@ -1,0 +1,24 @@
+<label class="font-pathway text-pw-label font-medium text-pw-ink" [attr.for]="id">{{
+  label()
+}}</label>
+<input
+  class="h-14 w-full min-w-0 rounded-pw-field border-2 border-pw-muted bg-pw-surface p-4 font-pathway text-pw-body text-pw-ink"
+  [id]="id"
+  [type]="type()"
+  [attr.autocomplete]="autocomplete() || null"
+  [attr.aria-describedby]="describedBy()"
+  [attr.aria-invalid]="error() ? 'true' : null"
+  [class.border-pw-error]="!!error()"
+  [value]="value()"
+  (input)="value.set($any($event.target).value)"
+/>
+@if (error()) {
+  <p class="m-0 font-pathway text-pw-label font-semibold text-pw-error" [id]="id + '-error'">
+    {{ error() }}
+  </p>
+}
+@if (hint()) {
+  <p class="m-0 font-pathway text-pw-label font-medium text-pw-muted" [id]="id + '-hint'">
+    {{ hint() }}
+  </p>
+}

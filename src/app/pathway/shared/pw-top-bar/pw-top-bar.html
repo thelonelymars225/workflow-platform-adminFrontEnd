@@ -1,0 +1,22 @@
+<a routerLink="/pathway" class="rounded-pw-field no-underline"
+  ><pw-logo /><span class="sr-only"> home</span></a
+>
+<nav aria-label="Main" class="order-3 w-full min-[900px]:order-none min-[900px]:w-auto">
+  <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
+    <li><a pw-nav-item routerLink="/pathway" [current]="section() === 'home'">Home</a></li>
+    <li>
+      <a pw-nav-item routerLink="/pathway" fragment="jobs" [current]="section() === 'jobs'"
+        >My jobs</a
+      >
+    </li>
+    <li>
+      <button pw-nav-item type="button" aria-haspopup="dialog" (click)="help.emit()">Help</button>
+    </li>
+  </ul>
+</nav>
+<p
+  class="m-0 inline-flex h-12 items-center gap-2.5 pl-3 pr-4 font-pathway text-pw-label font-medium text-pw-ink"
+>
+  <pw-icon name="user" />
+  <span><span class="sr-only">Signed in as </span>{{ userName() }}</span>
+</p>
