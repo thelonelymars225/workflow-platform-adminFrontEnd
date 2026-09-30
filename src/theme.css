@@ -31,3 +31,62 @@
   --container-sign-in: 480px;
   --spacing-sidebar: 224px;
 }
+
+/* Pathway (V3) tokens — Figma "Pathway / Palette" variables and "Pathway/…" text styles. */
+@theme {
+  --font-pathway: 'Lexend', system-ui, sans-serif;
+  --color-pw-bg: #f1f4f8;
+  --color-pw-surface: #ffffff;
+  --color-pw-ink: #0f172a;
+  /* Figma muted is #3b4a63; nudged so muted text on every tile colour reaches 7:1. */
+  --color-pw-muted: #394760;
+  --color-pw-border: #aeb9cb;
+  --color-pw-accent: #1749b8;
+  --color-pw-accent-tint: #dce7fb;
+  /* Accent/success text on their tints is below 7:1 in Figma; these darker text tokens pass. */
+  --color-pw-accent-strong: #1442a7;
+  --color-pw-success-strong: #165a32;
+  /* Not in the Figma palette: needed for form errors (8.2:1 on white). */
+  --color-pw-error: #9a1c1c;
+  --color-pw-on-accent: #ffffff;
+  --color-pw-success: #1a6b3c;
+  --color-pw-success-tint: #ddf3e4;
+  --color-pw-tile-get: #ffe9a8;
+  --color-pw-tile-make: #cfe2ff;
+  --color-pw-tile-check: #d2f0da;
+  --color-pw-tile-send: #e7dcff;
+  --radius-pw-tile: 20px;
+  --radius-pw-button: 14px;
+  --radius-pw-field: 12px;
+  --radius-pw-pill: 10px;
+  --text-pw-display: 40px;
+  --text-pw-display--line-height: 48px;
+  --text-pw-heading: 30px;
+  --text-pw-heading--line-height: 38px;
+  --text-pw-section: 24px;
+  --text-pw-section--line-height: 32px;
+  --text-pw-tile: 24px;
+  --text-pw-tile--line-height: 30px;
+  --text-pw-button: 20px;
+  --text-pw-button--line-height: 24px;
+  --text-pw-body: 18px;
+  --text-pw-body--line-height: 28px;
+  --text-pw-label: 16px;
+  --text-pw-label--line-height: 22px;
+}
+
+/* Step colour from the element's `data-step` (get | make | check | send). */
+@utility bg-pw-step {
+  &[data-step='get'] {
+    background-color: var(--color-pw-tile-get);
+  }
+  &[data-step='make'] {
+    background-color: var(--color-pw-tile-make);
+  }
+  &[data-step='check'] {
+    background-color: var(--color-pw-tile-check);
+  }
+  &[data-step='send'] {
+    background-color: var(--color-pw-tile-send);
+  }
+}

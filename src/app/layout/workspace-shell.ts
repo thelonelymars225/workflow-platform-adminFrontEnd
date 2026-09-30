@@ -15,11 +15,11 @@ export class WorkspaceShell {
   readonly menuOpen = signal(false);
   readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
   readonly nav = [
-    { path: '/start', label: 'Start here' },
-    { path: '/tasks', label: 'My tasks' },
-    { path: '/connections', label: 'Connected apps' },
-    { path: '/people', label: 'People' },
-    { path: '/settings', label: 'Settings' },
+    { path: '/atlas/start', label: 'Start here' },
+    { path: '/atlas/tasks', label: 'My tasks' },
+    { path: '/atlas/connections', label: 'Connected apps' },
+    { path: '/atlas/people', label: 'People' },
+    { path: '/atlas/settings', label: 'Settings' },
   ];
   private hydrated = false;
   constructor() {

@@ -6,7 +6,7 @@ import { RouterLink } from '@angular/router';
   template: `<section class="panel empty">
     <h1>Let’s get you back on track.</h1>
     <p class="muted">This page isn’t available. Your saved tasks are still here.</p>
-    <a class="button" routerLink="/start">Back to Start here</a>
+    <a class="button" routerLink="/atlas/start">Back to Start here</a>
   </section>`,
 })
 export class NotFound {}

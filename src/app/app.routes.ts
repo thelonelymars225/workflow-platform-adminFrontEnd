@@ -1,14 +1,15 @@
 import { Routes } from '@angular/router';
 import { WorkspaceShell } from './layout/workspace-shell';
 
+/** Pathway (V3) is the app. Atlas v2 is kept under /atlas for comparison. */
 export const routes: Routes = [
   {
-    path: 'sign-in',
+    path: 'atlas/sign-in',
     title: 'Welcome back · workFlow',
     loadComponent: () => import('./features/sign-in/sign-in').then((m) => m.SignIn),
   },
   {
-    path: '',
+    path: 'atlas',
     component: WorkspaceShell,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'start' },
@@ -64,5 +65,9 @@ export const routes: Routes = [
         loadComponent: () => import('./shared/not-found').then((m) => m.NotFound),
       },
     ],
+  },
+  {
+    path: '',
+    loadChildren: () => import('./pathway/pathway.routes').then((m) => m.pathwayRoutes),
   },
 ];

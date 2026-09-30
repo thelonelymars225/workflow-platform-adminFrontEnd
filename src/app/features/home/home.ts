@@ -13,6 +13,6 @@ export class Home {
   readonly action = taskAction;
   start(kind: TaskKind) {
     const task = this.store.create(kind);
-    void this.router.navigate(['/tasks', task.id, 'setup']);
+    void this.router.navigate(['/atlas/tasks', task.id, 'setup']);
   }
 }

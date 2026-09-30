@@ -44,8 +44,8 @@ import { NotFound } from '../../shared/not-found';
             ><span class="row-status">Nothing was sent</span>
           </div>
           <div class="actions">
-            <a class="button" routerLink="/tasks">View my tasks</a
-            ><a class="button secondary" [routerLink]="['/tasks', task.id, 'setup']"
+            <a class="button" routerLink="/atlas/tasks">View my tasks</a
+            ><a class="button secondary" [routerLink]="['/atlas/tasks', task.id, 'setup']"
               >Edit this task</a
             >
           </div>
@@ -56,7 +56,7 @@ import { NotFound } from '../../shared/not-found';
           <p class="muted">You’re in control of the next step.</p>
           <a
             class="button"
-            [routerLink]="['/tasks', task.id, task.status === 'draft' ? 'setup' : 'review']"
+            [routerLink]="['/atlas/tasks', task.id, task.status === 'draft' ? 'setup' : 'review']"
             >Continue this task</a
           >
         </section>

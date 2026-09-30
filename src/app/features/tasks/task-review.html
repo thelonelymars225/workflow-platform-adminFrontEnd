@@ -104,12 +104,16 @@
       <div class="actions">
         <button class="button" [disabled]="dueDateExpired" (click)="confirm()">
           {{ copy[task.kind].confirm }}</button
-        ><a class="button secondary" [routerLink]="['/tasks', task.id, 'setup']">Make changes</a>
+        ><a class="button secondary" [routerLink]="['/atlas/tasks', task.id, 'setup']"
+          >Make changes</a
+        >
       </div>
     } @else {
       <div class="actions">
-        <a class="button" routerLink="/tasks">View my tasks</a
-        ><a class="button secondary" [routerLink]="['/tasks', task.id, 'setup']">Edit this task</a>
+        <a class="button" routerLink="/atlas/tasks">View my tasks</a
+        ><a class="button secondary" [routerLink]="['/atlas/tasks', task.id, 'setup']"
+          >Edit this task</a
+        >
       </div>
     }
     <p class="muted">Preview workspace: this tries the next step. No files or messages are sent.</p>
@@ -130,7 +134,7 @@
       }}
     </p>
     <p class="hint">This is a preview. Nothing was scheduled or sent.</p>
-    <a class="button" routerLink="/tasks" (click)="confirmation.close()">View my tasks</a>
+    <a class="button" routerLink="/atlas/tasks" (click)="confirmation.close()">View my tasks</a>
   </app-modal>
 } @else if (store.ready()) {
   <app-not-found />

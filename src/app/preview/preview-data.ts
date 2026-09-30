@@ -195,7 +195,7 @@ export const CONNECTIONS = [
 ];
 export function taskPath(task: PreviewTask): string[] {
   return [
-    '/tasks',
+    '/atlas/tasks',
     task.id,
     task.status === 'draft'
       ? 'setup'
