@@ -1,4 +1,8 @@
-# workFlow frontend — Atlas v2
+# workFlow frontend — V3 Pathway
+
+The app at `/` is the [V3 / Pathway](https://www.figma.com/design/c7j7GsdR0CgqhNJjM9YyYl?node-id=63-5) design (see [V3 Pathway](#v3-pathway) below). The previous Atlas v2 design is kept under `/atlas` for comparison.
+
+## Atlas v2 (`/atlas`)
 
 Angular 21 implementation of [Atlas v2 in Figma](https://www.figma.com/design/c7j7GsdR0CgqhNJjM9YyYl?node-id=43-453). The familiar sidebar, three use cases, guided setup/review flow, connected apps, people, and settings follow the refined Atlas design, with responsive layouts and native form controls.
 
@@ -11,39 +15,45 @@ npm ci
 npm start
 ```
 
-Open `http://localhost:4200`. The default `/start` route opens the clearly labeled **Atlas preview**. It works without a backend. `/sign-in` presents the sign-in design, with a direct link to explore the sample workspace.
+Open `http://localhost:4200` for Pathway. `/atlas` opens the clearly labeled **Atlas preview**. It works without a backend. `/atlas/sign-in` presents the sign-in design, with a direct link to explore the sample workspace.
 
 ## What is connected
 
-| Area               | Behavior                                                                                                                                                      |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/workflows`       | Existing real workflow API: health, list, and create. Input retention, request errors, pending-submit protection, and HTTP tests are preserved.               |
-| `/start`, `/tasks` | Interactive sample workspace. Create tasks, edit setup, filter tasks, save drafts, review, and try completion.                                                |
-| `/connections`     | Sample access details and a local connection preview. No OAuth or provider requests.                                                                          |
-| `/people`          | Sample members, role explanations, and invitation previews. No invitations are sent.                                                                          |
-| `/settings`        | Workspace name, profile, timezone, and reminder preferences saved in this browser for the preview.                                                            |
-| `/sign-in`         | Sign-in UI and explanatory dialog. No authentication, account creation, session, or route protection is simulated. The email is neither submitted nor stored. |
+| Area                           | Behavior                                                                                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/atlas/workflows`             | Existing real workflow API: health, list, and create. Input retention, request errors, pending-submit protection, and HTTP tests are preserved.               |
+| `/atlas/start`, `/atlas/tasks` | Interactive sample workspace. Create tasks, edit setup, filter tasks, save drafts, review, and try completion.                                                |
+| `/atlas/connections`           | Sample access details and a local connection preview. No OAuth or provider requests.                                                                          |
+| `/atlas/people`                | Sample members, role explanations, and invitation previews. No invitations are sent.                                                                          |
+| `/atlas/settings`              | Workspace name, profile, timezone, and reminder preferences saved in this browser for the preview.                                                            |
+| `/atlas/sign-in`               | Sign-in UI and explanatory dialog. No authentication, account creation, session, or route protection is simulated. The email is neither submitted nor stored. |
 
 The backend currently supports creating and reading workflow definitions. SSO, app connections, document processing, scheduling, delivery, workspace administration, and approval execution are preview areas. Sample report/update content is fixed; choosing a file name does not read or analyze a real file. The completion view states that nothing was sent.
 
-Preview changes are stored under `workflow.atlas-preview.v1` in localStorage after hydration. Malformed/version-mismatched data falls back to the samples. Storage failures show a notice and retain changes for the current visit. Use sample information only; preview storage is not a credentials store. Clear that localStorage key to reset the sample workspace. `/workflows` uses the existing server API and does not mix its records with preview tasks.
+Preview changes are stored under `workflow.atlas-preview.v1` in localStorage after hydration. Malformed/version-mismatched data falls back to the samples. Storage failures show a notice and retain changes for the current visit. Use sample information only; preview storage is not a credentials store. Clear that localStorage key to reset the sample workspace. `/atlas/workflows` uses the existing server API and does not mix its records with preview tasks.
 
-## V3 Pathway preview
+## V3 Pathway
 
-`/pathway` implements the [V3 / Pathway — Steps as a picture](https://www.figma.com/design/c7j7GsdR0CgqhNJjM9YyYl?node-id=63-5) direction alongside Atlas v2: every job is shown as **Get → Make → Check → Send** tiles joined by arrows.
+`/` implements the [V3 / Pathway — Steps as a picture](https://www.figma.com/design/c7j7GsdR0CgqhNJjM9YyYl?node-id=63-5) direction: every job is shown as **Get → Make → Check → Send** tiles joined by arrows.
 
-| Route                      | Figma frame   |
-| -------------------------- | ------------- |
-| `/pathway/sign-in`         | 01 / Sign in  |
-| `/pathway`                 | 02 / Home     |
-| `/pathway/jobs/:id/set-up` | 03 / Set up   |
-| `/pathway/jobs/:id/check`  | 04 / Check    |
-| `/pathway/jobs/:id/done`   | 05 / Done     |
-| Top bar → Help             | Dialog / Help |
+| Route              | Figma frame   |
+| ------------------ | ------------- |
+| `/sign-in`         | 01 / Sign in  |
+| `/`                | 02 / Home     |
+| `/jobs/:id/set-up` | 03 / Set up   |
+| `/jobs/:id/check`  | 04 / Check    |
+| `/jobs/:id/done`   | 05 / Done     |
+| Top bar → Help     | Dialog / Help |
 
 - Tokens: the `Pathway / Palette` variables and `Pathway/…` text styles are Tailwind theme tokens in `src/theme.css` (`bg-pw-*`, `text-pw-*`, `rounded-pw-*`). Lexend is self-hosted from `public/pathway/fonts`.
-- Shared components (Button, Field, Nav item, Top bar, Tile, Arrow, Status, pathway, mini pathway, action bar, help dialog) are in `src/app/pathway/shared`.
-- Data: `src/app/pathway/pathway-jobs.ts` is a **mock** in-memory service. The backend has no task/step model yet, so nothing is read or sent. Swap its internals for API calls later; screens only use its public methods.
+- Structure (`src/app/pathway`): each component has its own folder with a `.ts` class, `.html` view and `.spec.ts`.
+  - `pages/` — the five screens (`pw-sign-in`, `pw-home`, `pw-set-up`, `pw-check`, `pw-done`)
+  - `layout/pathway-shell` — top bar, page outlet and help dialog
+  - `shared/` — Button, Field, Nav item, Top bar, Tile, Arrow, Status, pathway, mini pathway, action bar, help dialog
+  - `data/` — `pathway.models.ts` (types), `pathway-mock-data.ts` (sample data), `pathway-jobs.ts` (service)
+  - `testing/` — shared test helpers
+- Styling is Tailwind utilities in the `.html` views; variants use `data-*`/`aria-*` attributes (`data-[variant=primary]:…`), and step colours use the `bg-pw-step` utility with `data-step`.
+- Data: `src/app/pathway/data/pathway-jobs.ts` is a **mock** in-memory service. The backend has no task/step model yet, so nothing is read or sent. Swap its internals for API calls later; screens only use its public methods.
 
 ## Run with PostgreSQL and the API
 
@@ -67,7 +77,7 @@ npm ci
 npm start
 ```
 
-Open `http://localhost:4200/workflows`. **API connected** confirms that the API responds; the saved workflow list confirms database access. Create a workflow, refresh the browser, then restart the API and refresh again. The same workflow ID should remain.
+Open `http://localhost:4200/atlas/workflows`. **API connected** confirms that the API responds; the saved workflow list confirms database access. Create a workflow, refresh the browser, then restart the API and refresh again. The same workflow ID should remain.
 
 `src/app/workflow-api.ts` remains the typed HttpClient boundary using same-origin `/api`. The single development API address is in `proxy.conf.json` (default `http://localhost:5159`). Restart `npm start` after changing it. No credentials belong in frontend code or the proxy configuration.
 
@@ -112,7 +122,7 @@ For browser review, check desktop at 1440×960 and mobile at 390×844:
 4. Use Connected apps access dialogs; preview a connection. Try an invalid and then valid invitation, and confirm member counts update without sending email.
 5. Save workspace/profile preferences and refresh. Open each settings section and the sign-in explanation.
 6. Use Tab, Shift+Tab, Enter, and Escape to check the menu, links, form controls, modal focus, and focus return. Check narrow layout and 200% zoom for overflow.
-7. With the API/database running, use `/workflows` to create a definition, refresh, and restart the API to check persistence. Stop the API to check errors and retained input.
+7. With the API/database running, use `/atlas/workflows` to create a definition, refresh, and restart the API to check persistence. Stop the API to check errors and retained input.
 
 For the connected workflow page, also check:
 
@@ -131,6 +141,6 @@ Checked from fresh clones with Node 24.21.0, npm 11.12.1, .NET SDK 10.0.401, and
 - All 15 frontend tests passed. The production build completed and prerendered eight routes.
 - All 26 backend tests passed with PostgreSQL enabled; none were skipped. These cover migrations, persistence across API restarts, and repeatable sample seeding.
 - The documented migration and normal startup commands worked. Direct HTTP checks confirmed health and proxy responses, an empty list, validation errors, and a missing workflow response. A workflow created through the API kept the same ID and content after an API restart and appeared once in the proxied list.
-- Brave displayed **API connected** and **No workflows yet** on `/workflows`. Browser review covered only this initial state.
+- Brave displayed **API connected** and **No workflows yet** on `/atlas/workflows`. Browser review covered only this initial state.
 
 Browser creation, persistence after browser refresh/API restart, visible validation and service errors, input retention and recovery, and the disabled pending-submit button still need verification. The setup pull requests remain drafts until those browser acceptance checks pass.

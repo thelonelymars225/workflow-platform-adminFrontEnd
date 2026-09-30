@@ -1,0 +1,40 @@
+<dialog
+  #dialog
+  aria-labelledby="pw-help-title"
+  aria-describedby="pw-help-intro"
+  class="m-auto max-h-[calc(100dvh-32px)] w-[min(600px,calc(100vw-32px))] rounded-[24px] border-2 border-pw-border bg-pw-surface p-6 text-pw-ink backdrop:bg-pw-ink/60 min-[600px]:p-10"
+  (keydown)="onKeydown($event)"
+  (cancel)="$event.preventDefault(); close()"
+  (close)="restoreFocus()"
+>
+  <div class="flex flex-col gap-6 font-pathway">
+    <h2 id="pw-help-title" class="m-0 flex items-center gap-3 text-pw-heading font-semibold">
+      <span class="text-pw-accent"><pw-icon name="help" [size]="32" /></span>Help
+    </h2>
+    <p id="pw-help-intro" class="m-0 text-pw-body text-pw-muted">
+      Every job follows the same four steps. You can change any step by tapping it.
+    </p>
+    <ul class="m-0 flex list-none flex-col gap-6 p-0">
+      @for (item of items; track item.type) {
+        <li class="flex items-center gap-3.5">
+          <span
+            class="bg-pw-step inline-flex size-12 shrink-0 items-center justify-center rounded-pw-field"
+            [attr.data-step]="item.type"
+          >
+            <pw-icon [name]="item.type" />
+          </span>
+          <span class="flex flex-col gap-0.5">
+            <span class="text-pw-section font-semibold">{{ item.name }}</span>
+            <span class="text-pw-body text-pw-muted">{{ item.text }}</span>
+          </span>
+        </li>
+      }
+    </ul>
+    <p class="m-0 text-pw-body">
+      Want to talk to a person? Your workspace administrator is {{ admin() }}.
+    </p>
+    <button pw-button type="button" class="w-full" (click)="close()">
+      Back to what I was doing
+    </button>
+  </div>
+</dialog>

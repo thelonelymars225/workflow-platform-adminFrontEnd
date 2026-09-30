@@ -20,7 +20,7 @@ import { PageHeading } from '../../shared/page-heading';
           </button>
         }
       </div>
-      <a class="button" routerLink="/start">+ Start a task</a>
+      <a class="button" routerLink="/atlas/start">+ Start a task</a>
     </div>
     <section class="stack" aria-label="Your tasks" aria-live="polite">
       @for (task of visible(); track task.id) {
@@ -39,12 +39,14 @@ import { PageHeading } from '../../shared/page-heading';
         <div class="panel empty">
           <h2>{{ filter() === 'review' ? 'You’re all caught up.' : 'No saved drafts yet.' }}</h2>
           <p class="muted">Choose a task whenever you’re ready.</p>
-          <a class="button secondary" routerLink="/start">Choose a task</a>
+          <a class="button secondary" routerLink="/atlas/start">Choose a task</a>
         </div>
       }
     </section>
     <p class="muted">You can change a schedule, a connection, or a result at any time.</p>
-    <a class="text-button" routerLink="/workflows">Open workflows saved to your workspace →</a>
+    <a class="text-button" routerLink="/atlas/workflows"
+      >Open workflows saved to your workspace →</a
+    >
   </div>`,
 })
 export class TaskList {

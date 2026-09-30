@@ -1,0 +1,31 @@
+@if (editable()) {
+  <button
+    type="button"
+    class="bg-pw-step flex min-h-[220px] w-full cursor-pointer flex-col items-start gap-2.5 rounded-pw-tile border-0 p-6 text-left font-pathway text-pw-ink min-[900px]:w-[260px]"
+    [attr.data-step]="type()"
+    [id]="'pw-tile-' + type()"
+    [class.outline-3]="selected()"
+    [class.outline-pw-accent]="selected()"
+    [attr.aria-pressed]="selected()"
+    [attr.aria-label]="'Change the ' + type() + ' step: ' + title()"
+    (click)="edit.emit(type())"
+  >
+    <ng-container *ngTemplateOutlet="body" />
+  </button>
+} @else {
+  <div
+    class="bg-pw-step flex min-h-[220px] w-full flex-col items-start gap-2.5 rounded-pw-tile p-6 font-pathway text-pw-ink min-[900px]:w-[260px]"
+    [attr.data-step]="type()"
+  >
+    <ng-container *ngTemplateOutlet="body" />
+  </div>
+}
+
+<ng-template #body>
+  <span class="flex items-center gap-2.5">
+    <pw-icon [name]="type()" [size]="28" />
+    <span class="text-pw-label font-medium uppercase">{{ type() }}</span>
+  </span>
+  <span class="text-pw-tile font-semibold [overflow-wrap:anywhere]">{{ title() }}</span>
+  <span class="text-pw-body text-pw-muted [overflow-wrap:anywhere]">{{ detail() }}</span>
+</ng-template>

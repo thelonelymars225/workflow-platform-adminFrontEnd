@@ -74,3 +74,19 @@
   --text-pw-label: 16px;
   --text-pw-label--line-height: 22px;
 }
+
+/* Step colour from the element's `data-step` (get | make | check | send). */
+@utility bg-pw-step {
+  &[data-step='get'] {
+    background-color: var(--color-pw-tile-get);
+  }
+  &[data-step='make'] {
+    background-color: var(--color-pw-tile-make);
+  }
+  &[data-step='check'] {
+    background-color: var(--color-pw-tile-check);
+  }
+  &[data-step='send'] {
+    background-color: var(--color-pw-tile-send);
+  }
+}

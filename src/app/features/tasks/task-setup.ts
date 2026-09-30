@@ -61,7 +61,7 @@ export class TaskSetup {
       period: task.period.trim(),
       status: preview ? 'review' : 'draft',
     });
-    if (preview) void this.router.navigate(['/tasks', task.id, 'review']);
+    if (preview) void this.router.navigate(['/atlas/tasks', task.id, 'review']);
     else this.saved().open();
   }
 }

@@ -28,11 +28,11 @@ describe('Approval due dates', () => {
   });
 
   async function openApproval(dueDate: string, page: 'setup' | 'review') {
-    const harness = await RouterTestingHarness.create('/start');
+    const harness = await RouterTestingHarness.create('/atlas/start');
     const store = TestBed.inject(PreviewStore);
     const task = store.create('approval');
     store.save({ ...task, dueDate, status: page === 'review' ? 'review' : 'draft' });
-    await harness.navigateByUrl(`/tasks/${task.id}/${page}`);
+    await harness.navigateByUrl(`/atlas/tasks/${task.id}/${page}`);
     return { harness, store, id: task.id };
   }
 

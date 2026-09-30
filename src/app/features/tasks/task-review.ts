@@ -41,7 +41,7 @@ export class TaskReview {
       status:
         task.kind === 'report' ? 'complete' : task.kind === 'update' ? 'scheduled' : 'waiting',
     });
-    if (task.kind === 'report') void this.router.navigate(['/tasks', task.id, 'complete']);
+    if (task.kind === 'report') void this.router.navigate(['/atlas/tasks', task.id, 'complete']);
     else this.confirmation().open();
   }
 }
