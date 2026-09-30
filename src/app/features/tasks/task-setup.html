@@ -182,7 +182,7 @@
         (click)="save(false, setup)"
       >
         Save for later</button
-      ><a class="button secondary" routerLink="/connections">Choose another app</a>
+      ><a class="button secondary" routerLink="/atlas/connections">Choose another app</a>
     </div>
     <p class="muted">Nothing is shared yet. You’ll check the preview on the next page.</p>
   </form>
@@ -193,7 +193,9 @@
     @if (store.storageNotice()) {
       <p class="notice">{{ store.storageNotice() }}</p>
     }
-    <a class="button" routerLink="/start" (click)="saved.close()">Back to Start here</a></app-modal
+    <a class="button" routerLink="/atlas/start" (click)="saved.close()"
+      >Back to Start here</a
+    ></app-modal
   >
 } @else if (store.ready()) {
   <app-not-found />

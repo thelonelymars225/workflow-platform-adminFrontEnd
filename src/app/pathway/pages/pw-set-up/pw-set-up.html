@@ -67,7 +67,7 @@
 
   <pw-action-bar note="Nothing is sent yet. You will see a preview first.">
     <button pw-button type="button" (click)="next(job.id)">Next: check the plan</button>
-    <a pw-button variant="secondary" routerLink="/pathway">Save for later</a>
+    <a pw-button variant="secondary" routerLink="/">Save for later</a>
   </pw-action-bar>
 } @else {
   <h1 class="m-0 text-pw-heading font-semibold">We could not find that job.</h1>
@@ -75,6 +75,6 @@
     It may have been removed. Your other jobs are on Home.
   </p>
   <pw-action-bar>
-    <a pw-button routerLink="/pathway">Back to home</a>
+    <a pw-button routerLink="/">Back to home</a>
   </pw-action-bar>
 }

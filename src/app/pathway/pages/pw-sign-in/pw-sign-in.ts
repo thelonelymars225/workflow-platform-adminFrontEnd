@@ -48,6 +48,6 @@ export class PwSignIn {
   }
 
   protected openWorkspace() {
-    void this.router.navigateByUrl('/pathway');
+    void this.router.navigateByUrl('/');
   }
 }

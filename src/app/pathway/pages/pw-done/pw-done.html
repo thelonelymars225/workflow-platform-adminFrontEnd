@@ -41,7 +41,7 @@
       <p class="m-0 text-pw-body font-semibold text-pw-success-strong">{{ repeatMessage() }}</p>
     }
     <pw-action-bar [note]="job.copy.findIt">
-      <a pw-button routerLink="/pathway">Back to home</a>
+      <a pw-button routerLink="/">Back to home</a>
       <button
         pw-button
         variant="secondary"
@@ -61,13 +61,10 @@
       </p>
     </header>
     <pw-action-bar note="Nothing is sent yet.">
-      <a
-        pw-button
-        [routerLink]="['/pathway/jobs', job.id, job.stage === 'setup' ? 'set-up' : 'check']"
-      >
+      <a pw-button [routerLink]="['/jobs', job.id, job.stage === 'setup' ? 'set-up' : 'check']">
         {{ job.stage === 'setup' ? 'Finish setting up' : 'Check it now' }}
       </a>
-      <a pw-button variant="secondary" routerLink="/pathway">Back to home</a>
+      <a pw-button variant="secondary" routerLink="/">Back to home</a>
     </pw-action-bar>
   }
 } @else {
@@ -75,5 +72,5 @@
   <p class="m-0 text-pw-body text-pw-muted">
     It may have been removed. Your other jobs are on Home.
   </p>
-  <pw-action-bar><a pw-button routerLink="/pathway">Back to home</a></pw-action-bar>
+  <pw-action-bar><a pw-button routerLink="/">Back to home</a></pw-action-bar>
 }

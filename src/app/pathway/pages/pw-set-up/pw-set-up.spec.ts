@@ -8,7 +8,7 @@ describe('Set up', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter(routes)] }));
 
   it('Set up: editing a step updates its tile', async () => {
-    const { el, settle, button } = await openRoute('/pathway/jobs/monthly-sales/set-up');
+    const { el, settle, button } = await openRoute('/jobs/monthly-sales/set-up');
     expect(el().textContent).toContain('You are changing the Get step');
     el().querySelector<HTMLButtonElement>('#pw-tile-make')!.click();
     await settle();
@@ -29,7 +29,7 @@ describe('Set up', () => {
   });
 
   it('Set up: "Close without saving" keeps the tile as it was', async () => {
-    const { el, settle, button } = await openRoute('/pathway/jobs/monthly-sales/set-up');
+    const { el, settle, button } = await openRoute('/jobs/monthly-sales/set-up');
     const input = el().querySelector<HTMLInputElement>('form pw-field input')!;
     input.value = 'Dropbox';
     input.dispatchEvent(new Event('input'));
@@ -42,7 +42,7 @@ describe('Set up', () => {
 
   it('Set up (empty new job): asks for the missing steps before moving on', async () => {
     const job = TestBed.inject(PathwayJobs).create();
-    const { el, settle, button } = await openRoute(`/pathway/jobs/${job.id}/set-up`);
+    const { el, settle, button } = await openRoute(`/jobs/${job.id}/set-up`);
     button('Next: check the plan').click();
     await settle();
     expect(el().querySelector('[role="alert"]')?.textContent).toContain(

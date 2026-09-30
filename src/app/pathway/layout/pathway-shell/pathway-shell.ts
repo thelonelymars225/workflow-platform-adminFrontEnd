@@ -46,6 +46,6 @@ export class PathwayShell {
   }
 
   private sectionFor(url: string): PwSection {
-    return url.startsWith('/pathway/jobs') ? 'jobs' : 'home';
+    return url.startsWith('/jobs') ? 'jobs' : 'home';
   }
 }

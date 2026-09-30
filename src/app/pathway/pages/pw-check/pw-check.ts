@@ -52,6 +52,6 @@ export class PwCheck {
 
   protected send(job: PathwayJob) {
     this.jobs.send(job.id);
-    void this.router.navigate(['/pathway/jobs', job.id, 'done']);
+    void this.router.navigate(['/jobs', job.id, 'done']);
   }
 }

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { PathwayShell } from './layout/pathway-shell/pathway-shell';
 
-/** V3 Pathway screens, alongside the Atlas v2 routes. */
+/** V3 Pathway screens, served from the app root. */
 export const pathwayRoutes: Routes = [
   {
     path: 'sign-in',

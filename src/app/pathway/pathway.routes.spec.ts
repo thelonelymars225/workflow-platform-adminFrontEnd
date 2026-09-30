@@ -8,15 +8,15 @@ describe('Pathway routes', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter(routes)] }));
 
   it('shows a not-found state for an unknown job', async () => {
-    const { el } = await openRoute('/pathway/jobs/nope/check');
+    const { el } = await openRoute('/jobs/nope/check');
     expect(el().textContent).toContain('We could not find that job.');
   });
 
   it('keeps the primary action first in the footer on every step screen', async () => {
-    const { harness, el } = await openRoute('/pathway/jobs/monthly-sales/set-up');
+    const { harness, el } = await openRoute('/jobs/monthly-sales/set-up');
     for (const page of ['set-up', 'check', 'done']) {
       if (page === 'done') TestBed.inject(PathwayJobs).send('monthly-sales');
-      await harness.navigateByUrl(`/pathway/jobs/monthly-sales/${page}`);
+      await harness.navigateByUrl(`/jobs/monthly-sales/${page}`);
       const first = el().querySelector('pw-action-bar')!.firstElementChild!;
       expect(first.getAttribute('data-variant')).toBe('primary');
     }

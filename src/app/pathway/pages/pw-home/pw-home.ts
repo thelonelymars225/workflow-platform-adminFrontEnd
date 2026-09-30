@@ -29,7 +29,7 @@ export class PwHome {
 
   protected link(job: PathwayJob) {
     const page = job.stage === 'setup' ? 'set-up' : job.stage;
-    return ['/pathway/jobs', job.id, page];
+    return ['/jobs', job.id, page];
   }
 
   protected action(job: PathwayJob) {
@@ -39,6 +39,6 @@ export class PwHome {
 
   protected start() {
     const job = this.jobs.create();
-    void this.router.navigate(['/pathway/jobs', job.id, 'set-up']);
+    void this.router.navigate(['/jobs', job.id, 'set-up']);
   }
 }

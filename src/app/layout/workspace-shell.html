@@ -1,6 +1,6 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="mobile-header">
-  <a class="brand" routerLink="/start">workFlow</a
+  <a class="brand" routerLink="/atlas/start">workFlow</a
   ><button
     class="button secondary"
     (click)="menuOpen.set(!menuOpen())"
@@ -11,7 +11,7 @@
   </button>
 </header>
 <aside class="sidebar" [class.open]="menuOpen()">
-  <a class="brand desktop-brand" routerLink="/start">workFlow</a>
+  <a class="brand desktop-brand" routerLink="/atlas/start">workFlow</a>
   <p class="workspace-name">{{ store.preferences().workspace }}</p>
   <nav id="workspace-nav" aria-label="Workspace">
     @for (item of nav; track item.path) {
@@ -28,15 +28,15 @@
     Help & guidance <span aria-hidden="true">→</span>
   </button>
   <div class="preview-label">
-    @if (router.url.startsWith('/workflows')) {
+    @if (router.url.startsWith('/atlas/workflows')) {
       <span class="eyebrow">Connected workflows</span>
       <p>Workflow definitions are saved to your workspace.</p>
-      <a routerLink="/start">Explore Atlas preview →</a>
+      <a routerLink="/atlas/start">Explore Atlas preview →</a>
     } @else {
       <span class="eyebrow">Atlas preview</span>
       <p>Sample workspace. Nothing is sent.</p>
-      <a routerLink="/workflows">Open saved workflows →</a
-      ><a routerLink="/sign-in">View sign-in →</a>
+      <a routerLink="/atlas/workflows">Open saved workflows →</a
+      ><a routerLink="/atlas/sign-in">View sign-in →</a>
     }
   </div>
 </aside>

@@ -98,7 +98,7 @@ export class PwSetUp {
       return;
     }
     this.jobs.readyForCheck(id);
-    void this.router.navigate(['/pathway/jobs', id, 'check']);
+    void this.router.navigate(['/jobs', id, 'check']);
   }
 
   private focusTile(type: StepType) {

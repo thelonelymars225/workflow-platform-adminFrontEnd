@@ -13,7 +13,7 @@ describe('Atlas task journeys', () => {
   afterEach(() => localStorage.clear());
 
   it('opens the home page and routes to all three guided task types', async () => {
-    const harness = await RouterTestingHarness.create('/start');
+    const harness = await RouterTestingHarness.create('/atlas/start');
     expect(harness.routeNativeElement?.textContent).toContain(
       'What would you like help with today?',
     );
@@ -21,13 +21,13 @@ describe('Atlas task journeys', () => {
     const store = TestBed.inject(PreviewStore);
     for (const kind of ['report', 'update', 'approval'] as const) {
       const task = store.create(kind);
-      await harness.navigateByUrl(`/tasks/${task.id}/setup`);
+      await harness.navigateByUrl(`/atlas/tasks/${task.id}/setup`);
       expect(harness.routeNativeElement?.querySelectorAll('.step').length).toBe(3);
     }
   });
 
   it('retains edited form values when moving to review and back', async () => {
-    const harness = await RouterTestingHarness.create('/tasks/report/setup');
+    const harness = await RouterTestingHarness.create('/atlas/tasks/report/setup');
     // Resolve the active routed page, beneath the workspace shell.
     const page = TestBed.inject(PreviewStore);
     const input = harness.routeNativeElement!.querySelector<HTMLInputElement>('#document')!;
@@ -42,14 +42,14 @@ describe('Atlas task journeys', () => {
     harness.detectChanges();
     expect(page.tasks().find((t) => t.id === 'report')?.document).toBe('October actuals.xlsx');
     expect(harness.routeNativeElement?.textContent).toContain('Take a look before you share.');
-    await harness.navigateByUrl('/tasks/report/setup');
+    await harness.navigateByUrl('/atlas/tasks/report/setup');
     expect(harness.routeNativeElement!.querySelector<HTMLInputElement>('#document')!.value).toBe(
       'October actuals.xlsx',
     );
   });
 
   it('keeps an incomplete setup on the form with an actionable error', async () => {
-    const harness = await RouterTestingHarness.create('/tasks/finance/setup');
+    const harness = await RouterTestingHarness.create('/atlas/tasks/finance/setup');
     const input = harness.routeNativeElement!.querySelector<HTMLInputElement>('#document')!;
     input.value = '   ';
     input.dispatchEvent(new Event('input'));
@@ -72,12 +72,12 @@ describe('Atlas task journeys', () => {
   });
 
   it('shows a confirmation for update and approval previews without implying delivery', async () => {
-    const harness = await RouterTestingHarness.create('/start');
+    const harness = await RouterTestingHarness.create('/atlas/start');
     const store = TestBed.inject(PreviewStore);
     for (const kind of ['update', 'approval'] as const) {
       const task = store.create(kind);
       store.save({ ...task, status: 'review' });
-      await harness.navigateByUrl(`/tasks/${task.id}/review`);
+      await harness.navigateByUrl(`/atlas/tasks/${task.id}/review`);
       const label = kind === 'update' ? 'Turn on weekly update' : 'Send approval request';
       const button = Array.from(
         harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>('button'),
@@ -101,11 +101,11 @@ describe('Atlas task journeys', () => {
   });
 
   it('requires review before completing and never completes an unknown task', async () => {
-    const harness = await RouterTestingHarness.create('/tasks/finance/complete');
+    const harness = await RouterTestingHarness.create('/atlas/tasks/finance/complete');
     expect(harness.routeNativeElement?.textContent).toContain('Review this task first.');
-    await harness.navigateByUrl('/tasks/missing/review');
+    await harness.navigateByUrl('/atlas/tasks/missing/review');
     expect(harness.routeNativeElement?.textContent).toContain('Let’s get you back on track.');
-    await harness.navigateByUrl('/tasks/report/review');
+    await harness.navigateByUrl('/atlas/tasks/report/review');
     const button = Array.from(
       harness.routeNativeElement!.querySelectorAll<HTMLButtonElement>('button'),
     ).find((b) => b.textContent?.includes('Approve & send'))!;

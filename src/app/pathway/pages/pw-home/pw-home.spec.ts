@@ -8,7 +8,7 @@ describe('Home', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter(routes)] }));
 
   it('Home (waiting): groups jobs, shows mini pathways, statuses and actions', async () => {
-    const { el } = await openRoute('/pathway');
+    const { el } = await openRoute('/');
     const sections = el().querySelectorAll('section[aria-label]');
     expect(sections[0].textContent).toContain('Needs you');
     expect(sections[0].textContent).toContain('Monthly sales report');
@@ -22,13 +22,13 @@ describe('Home', () => {
 
   it('Home (empty): explains there are no jobs yet', async () => {
     TestBed.inject(PathwayJobs).load([]);
-    const { el } = await openRoute('/pathway');
+    const { el } = await openRoute('/');
     expect(el().textContent).toContain('You have no jobs yet.');
     expect(el().querySelectorAll('article').length).toBe(0);
   });
 
   it('Home: "Start a new job" opens Set up for a new job', async () => {
-    const { harness, settle, button } = await openRoute('/pathway');
+    const { harness, settle, button } = await openRoute('/');
     button('+ Start a new job').click();
     await settle();
     expect(harness.routeNativeElement?.textContent).toContain('Step 1 of 3 · Set up');

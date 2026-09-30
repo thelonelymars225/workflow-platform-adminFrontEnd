@@ -1,13 +1,11 @@
-<a routerLink="/pathway" class="rounded-pw-field no-underline"
+<a routerLink="/" class="rounded-pw-field no-underline"
   ><pw-logo /><span class="sr-only"> home</span></a
 >
 <nav aria-label="Main" class="order-3 w-full min-[900px]:order-none min-[900px]:w-auto">
   <ul class="m-0 flex list-none flex-wrap gap-2 p-0">
-    <li><a pw-nav-item routerLink="/pathway" [current]="section() === 'home'">Home</a></li>
+    <li><a pw-nav-item routerLink="/" [current]="section() === 'home'">Home</a></li>
     <li>
-      <a pw-nav-item routerLink="/pathway" fragment="jobs" [current]="section() === 'jobs'"
-        >My jobs</a
-      >
+      <a pw-nav-item routerLink="/" fragment="jobs" [current]="section() === 'jobs'">My jobs</a>
     </li>
     <li>
       <button pw-nav-item type="button" aria-haspopup="dialog" (click)="help.emit()">Help</button>

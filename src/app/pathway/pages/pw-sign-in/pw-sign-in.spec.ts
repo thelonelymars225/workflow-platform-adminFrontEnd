@@ -8,7 +8,7 @@ describe('Sign in', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter(routes)] }));
 
   it('Sign in: explainer tiles, labelled field, and an error for an empty email', async () => {
-    const { el, settle, button } = await openRoute('/pathway/sign-in');
+    const { el, settle, button } = await openRoute('/sign-in');
     expect(el().textContent).toContain('Every job is four steps.');
     expect(el().querySelectorAll('pw-tile').length).toBe(4);
     expect(el().querySelector('label')?.textContent?.trim()).toBe('Work email');
@@ -19,7 +19,7 @@ describe('Sign in', () => {
   });
 
   it('Sign in: a valid email continues to Home', async () => {
-    const { harness, el, settle, button } = await openRoute('/pathway/sign-in');
+    const { harness, el, settle, button } = await openRoute('/sign-in');
     const input = el().querySelector<HTMLInputElement>('input')!;
     input.value = 'mars@company.com';
     input.dispatchEvent(new Event('input'));
